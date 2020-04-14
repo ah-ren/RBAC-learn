@@ -8,10 +8,18 @@ import (
 type MetaConfig struct {
 	RunMode string `yaml:"run-mode"`
 	Port    int    `yaml:"port"`
+	LogPath string `yaml:"log-path"`
+}
+
+type JwtConfig struct {
+	Secret string `yaml:"secret"`
+	Expire int64  `yaml:"expire"`
+	Issuer string `yaml:"issuer"`
 }
 
 type Config struct {
 	MetaConfig *MetaConfig `yaml:"meta"`
+	JwtConfig  *JwtConfig  `yaml:"jwt"`
 }
 
 func Load(path string) (*Config, error) {

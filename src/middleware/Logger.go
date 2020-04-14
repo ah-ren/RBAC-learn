@@ -19,8 +19,8 @@ func LoggerMiddleware(logger *logrus.Logger) gin.HandlerFunc {
 		method := c.Request.Method
 		path := c.Request.URL.Path
 		code := c.Writer.Status()
-		ip := c.ClientIP()
 		length := math.Abs(float64(c.Writer.Size()))
+		ip := c.ClientIP()
 
 		entry := logger.WithFields(logrus.Fields{
 			"Module":   "gin",

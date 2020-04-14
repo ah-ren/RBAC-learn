@@ -3,7 +3,12 @@ package server
 import (
 	"fmt"
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/result"
+	"github.com/Aoi-hosizora/RBAC-learn/src/config"
+	"github.com/Aoi-hosizora/RBAC-learn/src/controller"
+	"github.com/Aoi-hosizora/RBAC-learn/src/middleware"
+	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -20,6 +25,25 @@ func setupCommonRoute(engine *gin.Engine) {
 	})
 }
 
-func setupApiRoute(engine *gin.Engine) {
+func setupApiRoute(engine *gin.Engine, dic *xdi.DiContainer) {
+	container := &struct {
+		Config *config.Config         `di:"~"`
+		JwtSrv *middleware.JwtService `di:"~"`
+	}{}
+	if !dic.Inject(container) {
+		log.Fatalf("Failed to inject")
+	}
 
+	jwtMw := container.JwtSrv.JwtMiddleware()
+
+	userCtrl := controller.NewUserController(dic)
+
+	v1 := engine.Group("/v1")
+	{
+		authGroup := v1.Group("/auth")
+		{
+			authGroup.POST("/login", userCtrl.Login)
+			authGroup.GET("", jwtMw, userCtrl.CurrentUser)
+		}
+	}
 }

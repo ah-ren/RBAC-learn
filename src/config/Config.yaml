@@ -1,3 +1,9 @@
 meta:
   run-mode: debug
   port: 10001
+  log-path: log/console.log
+
+jwt:
+  secret: 9C27D0C7C04BDA8A1F1B099CF4F9B1956AF5164F
+  expire: 20 # second
+  issuer: vid.srv.auth

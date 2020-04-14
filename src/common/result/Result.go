@@ -1,6 +1,7 @@
 package result
 
 import (
+	"github.com/Aoi-hosizora/RBAC-learn/src/common/exception"
 	"github.com/Aoi-hosizora/ahlib/xlinkedhashmap"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -30,8 +31,8 @@ func Ok() *Result {
 	return Status(http.StatusOK)
 }
 
-func Error(code int32, message string) *Result {
-	return Status(code).SetMessage(message)
+func Error(se *exception.ServerError) *Result {
+	return Status(se.Code).SetMessage(se.Message)
 }
 
 func (r *Result) SetCode(code int32) *Result {

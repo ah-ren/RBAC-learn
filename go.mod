@@ -7,6 +7,7 @@ require (
 	github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200227043052-1d9e28f9af56
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.2
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644

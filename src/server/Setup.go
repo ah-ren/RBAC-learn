@@ -29,7 +29,7 @@ func setupLogger(config *config.Config) *logrus.Logger {
 
 	// file
 	fileHook, err := rotatefilehook.NewRotateFileHook(rotatefilehook.RotateFileConfig{
-		Filename:   "logs/console.log",
+		Filename:   config.MetaConfig.LogPath,
 		MaxSize:    50,
 		MaxBackups: 3,
 		MaxAge:     30,
