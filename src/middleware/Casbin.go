@@ -4,16 +4,17 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/exception"
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/result"
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
+	"github.com/Aoi-hosizora/RBAC-learn/src/database"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/qiangmzsx/string-adapter/v2"
+	string_adapter "github.com/qiangmzsx/string-adapter/v2"
 )
 
 type CasbinService struct {
-	Config     *config.Config          `di:"~"`
-	Adapter    *string_adapter.Adapter `di:"~"`
-	JwtService *JwtService             `di:"~"`
+	Config     *config.Config             `di:"~"`
+	CasbinRepo *database.CasbinRepository `di:"~"`
+	JwtService *JwtService                `di:"~"`
 }
 
 func NewCasbinService(dic *xdi.DiContainer) *CasbinService {
@@ -29,10 +30,8 @@ func (b *CasbinService) CasbinMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		path := c.Request.URL.Path
-		method := c.Request.Method
 
-		ok, err := b.enforce(user.Role, path, method)
+		ok, err := b.enforce(user.Role, c.Request.URL.Path, c.Request.Method)
 		if err != nil {
 			c.Abort()
 			result.Error(exception.CheckUserRoleError).JSON(c)
@@ -48,7 +47,8 @@ func (b *CasbinService) CasbinMiddleware() gin.HandlerFunc {
 }
 
 func (b *CasbinService) enforce(sub string, obj string, act string) (bool, error) {
-	enforcer, err := casbin.NewEnforcer(b.Config.CasbinConfig.ConfigPath, b.Adapter)
+	adapter := string_adapter.NewAdapter(b.CasbinRepo.String())
+	enforcer, err := casbin.NewEnforcer(b.Config.CasbinConfig.ConfigPath, adapter)
 	if err != nil {
 		return false, err
 	}

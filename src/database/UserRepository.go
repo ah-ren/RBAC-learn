@@ -12,10 +12,10 @@ type UserRepository struct {
 func NewUserRepository() *UserRepository {
 	pass, _ := util.AuthUtil.EncryptPassword("123456")
 	return &UserRepository{_list: []*po.User{
-		{ID: 1, Name: "User1", Password: pass, Role: "Admin"},
-		{ID: 2, Name: "User2", Password: pass, Role: "Normal"},
-		{ID: 3, Name: "User3", Password: pass, Role: "Normal"},
-		{ID: 4, Name: "User4", Password: pass, Role: "Normal"},
+		{ID: 1, Name: "User1", Password: pass, Role: "admin"},
+		{ID: 2, Name: "User2", Password: pass, Role: "normal"},
+		{ID: 3, Name: "User3", Password: pass, Role: "normal"},
+		{ID: 4, Name: "User4", Password: pass, Role: "normal"},
 	}}
 }
 

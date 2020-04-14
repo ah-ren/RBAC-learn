@@ -29,5 +29,5 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 func (u *UserController) QueryAll(c *gin.Context) {
 	users := u.UserRepo.QueryAll()
 	usersDto := xcondition.First(u.Mapper.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
-	result.Ok().SetPage(int32(len(usersDto)), 1, 200, usersDto)
+	result.Ok().SetPage(int32(len(usersDto)), 1, 200, usersDto).JSON(c)
 }

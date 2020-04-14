@@ -17,7 +17,7 @@ func provideServices(config *config.Config, logger *logrus.Logger) *xdi.DiContai
 
 	dic.Provide(profile.CreateEntityMappers())
 	dic.Provide(database.NewUserRepository())
-	dic.Provide(database.NewCasbinRepository().Adapter())
+	dic.Provide(database.NewCasbinRepository())
 	dic.Provide(middleware.NewJwtService(dic))
 	dic.Provide(middleware.NewCasbinService(dic))
 
