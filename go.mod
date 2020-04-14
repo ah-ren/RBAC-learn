@@ -13,6 +13,7 @@ require (
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644
 	github.com/sirupsen/logrus v1.5.0
 	github.com/snowzach/rotatefilehook v0.0.0-20180327172521-2f64f265f58c
+	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.2.8
 )

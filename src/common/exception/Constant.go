@@ -14,8 +14,3 @@ var (
 	WrongPasswordError = NewError(401, "wrong password")
 	LoginError         = NewError(500, "login failed")
 )
-
-// User
-var (
-	UserNotFoundError = NewError(404, "User not found")
-)

@@ -60,10 +60,10 @@ func (j *JwtService) GetContextUser(c *gin.Context) *po.User {
 }
 
 func (j *JwtService) getToken(c *gin.Context) string {
-	if token := c.Request.Header.Get("Authorization"); token == "" {
-		return c.DefaultQuery("Authorization", "")
-	} else {
+	if token := c.Request.Header.Get("Authorization"); token != "" {
 		return token
+	} else {
+		return c.DefaultQuery("Authorization", "")
 	}
 }
 

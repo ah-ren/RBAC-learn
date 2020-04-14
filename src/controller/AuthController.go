@@ -9,7 +9,9 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/model/dto"
 	"github.com/Aoi-hosizora/RBAC-learn/src/model/param"
 	"github.com/Aoi-hosizora/RBAC-learn/src/util"
+	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"log"
@@ -19,6 +21,7 @@ type AuthController struct {
 	Config     *config.Config           `di:"~"`
 	Logger     *logrus.Logger           `di:"~"`
 	JwtService *middleware.JwtService   `di:"~"`
+	Mapper     *xentity.EntityMappers   `di:"~"`
 	UserRepo   *database.UserRepository `di:"~"`
 }
 
@@ -37,22 +40,21 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 	user := a.UserRepo.QueryById(loginParam.Id)
-	if user.Password != loginParam.Password {
+
+	if ok, err := util.AuthUtil.CheckPassword(loginParam.Password, user.Password); err != nil {
+		result.Error(exception.LoginError).SetData(err).JSON(c)
+	} else if !ok {
 		result.Error(exception.WrongPasswordError).JSON(c)
 		return
 	}
-
-	token, err := util.AuthUtil.CreateToken(user.ID, a.Config.JwtConfig)
+	token, err := util.AuthUtil.GenerateToken(user.ID, a.Config.JwtConfig)
 	if err != nil {
 		result.Error(exception.LoginError).SetData(err).JSON(c)
 	}
 
+	userDto := xcondition.First(a.Mapper.Map(user, &dto.UserDto{})).(*dto.UserDto)
 	loginDto := dto.LoginDto{
-		User: &dto.UserDto{
-			ID:   user.ID,
-			Name: user.Name,
-			Role: user.Role,
-		},
+		User:  userDto,
 		Token: token,
 	}
 	result.Ok().SetData(loginDto).JSON(c)
@@ -60,10 +62,6 @@ func (a *AuthController) Login(c *gin.Context) {
 
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	user := a.JwtService.GetContextUser(c)
-	userDto := &dto.UserDto{
-		ID:   user.ID,
-		Name: user.Name,
-		Role: user.Role,
-	}
+	userDto := xcondition.First(a.Mapper.Map(user, &dto.UserDto{})).(*dto.UserDto)
 	result.Ok().SetData(userDto).JSON(c)
 }

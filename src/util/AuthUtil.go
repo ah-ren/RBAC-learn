@@ -3,6 +3,7 @@ package util
 import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
 	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
@@ -15,7 +16,26 @@ type Claims struct {
 	UserId uint32 `json:"user-id"`
 }
 
-func (a *authUtil) CreateToken(uid uint32, config *config.JwtConfig) (string, error) {
+func (a *authUtil) EncryptPassword(password string) (string, error) {
+	pwd, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(pwd), nil
+}
+
+func (a *authUtil) CheckPassword(password string, encrypted string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(encrypted), []byte(password))
+	if err == nil {
+		return true, nil
+	} else if err == bcrypt.ErrMismatchedHashAndPassword {
+		return false, nil
+	} else {
+		return false, err
+	}
+}
+
+func (a *authUtil) GenerateToken(uid uint32, config *config.JwtConfig) (string, error) {
 	claims := &Claims{
 		UserId: uid,
 		StandardClaims: jwt.StandardClaims{
@@ -36,7 +56,7 @@ func (a *authUtil) ParseToken(tokenString string, config *config.JwtConfig) (*Cl
 		return nil, err
 	}
 	claims, ok := token.Claims.(*Claims)
-	if !ok || token.Valid {
+	if !ok || !token.Valid {
 		return nil, jwt.ValidationError{Errors: jwt.ValidationErrorClaimsInvalid}
 	}
 	return claims, nil
@@ -54,7 +74,7 @@ func (a *authUtil) RefreshToken(tokenString string, config *config.JwtConfig) (s
 		return "", err
 	}
 	claims, ok := token.Claims.(*Claims)
-	if !ok || token.Valid {
+	if !ok || !token.Valid {
 		return "", jwt.ValidationError{Errors: jwt.ValidationErrorClaimsInvalid}
 	}
 	jwt.TimeFunc = time.Now
