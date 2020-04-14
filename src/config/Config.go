@@ -18,9 +18,14 @@ type JwtConfig struct {
 	RefreshExpire int64  `yaml:"refresh-expire"`
 }
 
+type CasbinConfig struct {
+	ConfigPath string `yaml:"config-path"`
+}
+
 type Config struct {
-	MetaConfig *MetaConfig `yaml:"meta"`
-	JwtConfig  *JwtConfig  `yaml:"jwt"`
+	MetaConfig   *MetaConfig   `yaml:"meta"`
+	JwtConfig    *JwtConfig    `yaml:"jwt"`
+	CasbinConfig *CasbinConfig `yaml:"casbin"`
 }
 
 func Load(path string) (*Config, error) {

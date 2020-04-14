@@ -13,23 +13,18 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
-	"log"
 )
 
 type AuthController struct {
 	Config     *config.Config           `di:"~"`
-	Logger     *logrus.Logger           `di:"~"`
 	JwtService *middleware.JwtService   `di:"~"`
 	Mapper     *xentity.EntityMappers   `di:"~"`
 	UserRepo   *database.UserRepository `di:"~"`
 }
 
-func NewUserController(dic *xdi.DiContainer) *AuthController {
+func NewAuthController(dic *xdi.DiContainer) *AuthController {
 	ctrl := &AuthController{}
-	if !dic.Inject(ctrl) {
-		log.Fatalf("Failed to inject")
-	}
+	dic.InjectForce(ctrl)
 	return ctrl
 }
 

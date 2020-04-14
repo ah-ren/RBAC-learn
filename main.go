@@ -9,7 +9,7 @@ import (
 
 var (
 	help       = *flag.Bool("h", false, "show help")
-	configPath = *flag.String("config", "./src/config/Config.yaml", "set config path")
+	configPath = *flag.String("config", "./src/config/config.yaml", "set config path")
 )
 
 func main() {

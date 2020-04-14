@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
 	"github.com/Aoi-hosizora/RBAC-learn/src/middleware"
-	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -14,15 +13,11 @@ import (
 type Server struct {
 	Server *gin.Engine
 	Config *config.Config
-	Dic    *xdi.DiContainer
 }
 
 func NewServer(config *config.Config) *Server {
 	engine := gin.New()
 	gin.SetMode(config.MetaConfig.RunMode)
-	if gin.Mode() == "debug" {
-		ginpprof.Wrap(engine)
-	}
 
 	setupBinding()
 	logger := setupLogger(config)
@@ -32,13 +27,15 @@ func NewServer(config *config.Config) *Server {
 	engine.Use(middleware.CorsMiddleware())
 	engine.Use(middleware.LoggerMiddleware(logger))
 
+	if gin.Mode() == "debug" {
+		ginpprof.Wrap(engine)
+	}
 	setupCommonRoute(engine)
 	setupApiRoute(engine, dic)
 
 	return &Server{
 		Server: engine,
 		Config: config,
-		Dic:    dic,
 	}
 }
 

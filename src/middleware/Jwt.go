@@ -9,13 +9,10 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/util"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
-	"log"
 )
 
 type JwtService struct {
 	Config   *config.Config           `di:"~"`
-	Logger   *logrus.Logger           `di:"~"`
 	UserRepo *database.UserRepository `di:"~"`
 
 	_key string `di:"-"`
@@ -23,9 +20,7 @@ type JwtService struct {
 
 func NewJwtService(dic *xdi.DiContainer) *JwtService {
 	srv := &JwtService{_key: "user"}
-	if !dic.Inject(srv) {
-		log.Fatalf("Failed to inject")
-	}
+	dic.InjectForce(srv)
 	return srv
 }
 
@@ -40,6 +35,7 @@ func (j *JwtService) JwtMiddleware() gin.HandlerFunc {
 		}
 
 		c.Set(j._key, user)
+		c.Next()
 	}
 }
 

@@ -59,6 +59,7 @@ func setupLogger(config *config.Config) *logrus.Logger {
 
 	// writer
 	out := io.MultiWriter(ansicolor.NewAnsiColorWriter(os.Stdout))
+	log.SetOutput(out)
 	gin.DefaultWriter = out
 	logger.Out = out
 

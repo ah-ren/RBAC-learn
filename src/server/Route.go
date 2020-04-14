@@ -8,7 +8,6 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/middleware"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
@@ -27,24 +26,29 @@ func setupCommonRoute(engine *gin.Engine) {
 
 func setupApiRoute(engine *gin.Engine, dic *xdi.DiContainer) {
 	container := &struct {
-		Config *config.Config         `di:"~"`
-		JwtSrv *middleware.JwtService `di:"~"`
+		Config        *config.Config            `di:"~"`
+		JwtService    *middleware.JwtService    `di:"~"`
+		CasbinService *middleware.CasbinService `di:"~"`
 	}{}
-	if !dic.Inject(container) {
-		log.Fatalf("Failed to inject")
-	}
+	dic.InjectForce(container)
 
-	jwtMw := container.JwtSrv.JwtMiddleware()
+	jwtMw := container.JwtService.JwtMiddleware()
+	casbinMw := container.CasbinService.CasbinMiddleware()
 
+	authCtrl := controller.NewAuthController(dic)
 	userCtrl := controller.NewUserController(dic)
 
 	v1 := engine.Group("/v1")
 	{
 		authGroup := v1.Group("/auth")
 		{
-			authGroup.POST("/login", userCtrl.Login)
-			authGroup.POST("/refresh", userCtrl.RefreshToken)
-			authGroup.GET("", jwtMw, userCtrl.CurrentUser)
+			authGroup.POST("/login", authCtrl.Login)
+			authGroup.POST("/refresh", authCtrl.RefreshToken)
+			authGroup.GET("", jwtMw, casbinMw, authCtrl.CurrentUser)
+		}
+		userGroup := v1.Group("/user")
+		{
+			userGroup.GET("", jwtMw, casbinMw, userCtrl.QueryAll)
 		}
 	}
 }

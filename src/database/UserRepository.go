@@ -24,10 +24,14 @@ func (u *UserRepository) AddUser(user *po.User) {
 }
 
 func (u *UserRepository) QueryById(id uint32) *po.User {
-	for _, u := range u._list {
-		if u.ID == id {
-			return u
+	for _, user := range u._list {
+		if user.ID == id {
+			return user
 		}
 	}
 	return nil
+}
+
+func (u *UserRepository) QueryAll() []*po.User {
+	return u._list
 }
