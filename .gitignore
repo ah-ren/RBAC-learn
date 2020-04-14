@@ -1,0 +1,11 @@
+### Editor ###
+.idea/
+.vscode/
+.ionide/
+.history/
+
+### Build ###
+build/
+release/
+
+### My ###
