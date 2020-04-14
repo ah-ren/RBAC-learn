@@ -1,6 +1,7 @@
 package exception
 
 type ServerError struct {
+	error
 	Code    int32
 	Message string
 }

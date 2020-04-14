@@ -12,9 +12,10 @@ type MetaConfig struct {
 }
 
 type JwtConfig struct {
-	Secret string `yaml:"secret"`
-	Expire int64  `yaml:"expire"`
-	Issuer string `yaml:"issuer"`
+	Secret        string `yaml:"secret"`
+	Issuer        string `yaml:"issuer"`
+	Expire        int64  `yaml:"expire"`
+	RefreshExpire int64  `yaml:"refresh-expire"`
 }
 
 type Config struct {

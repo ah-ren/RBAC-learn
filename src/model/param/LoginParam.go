@@ -1,6 +1,6 @@
 package param
 
 type LoginParam struct {
-	Id       uint32 `form:"id"       json:"id"       binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
+	Id       uint32 `json:"id"       form:"id"       binding:"required"`
+	Password string `json:"password" form:"password" binding:"required"`
 }

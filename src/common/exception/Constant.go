@@ -8,9 +8,11 @@ var (
 
 // Authorization
 var (
-	UnAuthorizedError = NewError(401, "unauthorized user")
-	TokenExpiredError = NewError(401, "token expired")
+	UnAuthorizedError        = NewError(401, "unauthorized user")
+	TokenExpiredError        = NewError(401, "token expired")
+	InvalidRefreshTokenError = NewError(401, "invalid refresh token")
 
 	WrongPasswordError = NewError(401, "wrong password")
 	LoginError         = NewError(500, "login failed")
+	RefreshTokenError  = NewError(500, "refresh token failed")
 )

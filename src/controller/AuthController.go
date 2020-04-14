@@ -47,17 +47,46 @@ func (a *AuthController) Login(c *gin.Context) {
 		result.Error(exception.WrongPasswordError).JSON(c)
 		return
 	}
-	token, err := util.AuthUtil.GenerateToken(user.ID, a.Config.JwtConfig)
+
+	accessToken, err := util.AuthUtil.GenerateToken(user.ID, false, a.Config.JwtConfig)
+	if err != nil {
+		result.Error(exception.LoginError).SetData(err).JSON(c)
+	}
+	refreshToken, err := util.AuthUtil.GenerateToken(user.ID, true, a.Config.JwtConfig)
 	if err != nil {
 		result.Error(exception.LoginError).SetData(err).JSON(c)
 	}
 
 	userDto := xcondition.First(a.Mapper.Map(user, &dto.UserDto{})).(*dto.UserDto)
 	loginDto := dto.LoginDto{
-		User:  userDto,
-		Token: token,
+		User:         userDto,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}
 	result.Ok().SetData(loginDto).JSON(c)
+}
+
+func (a *AuthController) RefreshToken(c *gin.Context) {
+	tokenParam := &param.TokenParam{}
+	if err := c.ShouldBind(tokenParam); err != nil {
+		result.Error(exception.RequestParamError).JSON(c)
+		return
+	}
+
+	refreshToken, accessToken, err := util.AuthUtil.RefreshToken(tokenParam.RefreshToken, tokenParam.AccessToken, a.Config.JwtConfig)
+	if err != nil {
+		if err == exception.InvalidRefreshTokenError {
+			result.Error(exception.InvalidRefreshTokenError).JSON(c)
+		} else {
+			result.Error(exception.RefreshTokenError).JSON(c)
+		}
+		return
+	}
+	tokenDto := dto.TokenDto{
+		RefreshToken: refreshToken,
+		AccessToken:  accessToken,
+	}
+	result.Ok().SetData(tokenDto).JSON(c)
 }
 
 func (a *AuthController) CurrentUser(c *gin.Context) {

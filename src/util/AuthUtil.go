@@ -1,6 +1,7 @@
 package util
 
 import (
+	"github.com/Aoi-hosizora/RBAC-learn/src/common/exception"
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
@@ -35,23 +36,31 @@ func (a *authUtil) CheckPassword(password string, encrypted string) (bool, error
 	}
 }
 
-func (a *authUtil) GenerateToken(uid uint32, config *config.JwtConfig) (string, error) {
+func (a *authUtil) signToken(secret string, claims *Claims) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(secret))
+}
+
+func (a *authUtil) GenerateToken(uid uint32, isRefresh bool, config *config.JwtConfig) (string, error) {
+	ex := config.Expire
+	if isRefresh {
+		ex = config.RefreshExpire
+	}
 	claims := &Claims{
 		UserId: uid,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Unix() + config.Expire,
+			ExpiresAt: time.Now().Unix() + ex,
 			Issuer:    config.Issuer,
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(config.Secret))
+	return a.signToken(config.Secret, claims)
 }
 
-func (a *authUtil) ParseToken(tokenString string, config *config.JwtConfig) (*Claims, error) {
+func (a *authUtil) ParseToken(accessToken string, config *config.JwtConfig) (*Claims, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return []byte(config.Secret), nil
 	}
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, keyFunc)
+	token, err := jwt.ParseWithClaims(accessToken, &Claims{}, keyFunc)
 	if err != nil {
 		return nil, err
 	}
@@ -62,26 +71,33 @@ func (a *authUtil) ParseToken(tokenString string, config *config.JwtConfig) (*Cl
 	return claims, nil
 }
 
-func (a *authUtil) RefreshToken(tokenString string, config *config.JwtConfig) (string, error) {
+func (a *authUtil) RefreshToken(refreshToken string, accessToken string, config *config.JwtConfig) (refresh string, access string, err error) {
+	refreshClaims, err := a.ParseToken(refreshToken, config)
+	if err != nil {
+		if a.IsTokenExpired(err) {
+			return "", "", exception.InvalidRefreshTokenError
+		}
+		return "", "", err
+	}
+
 	jwt.TimeFunc = func() time.Time {
 		return time.Unix(0, 0)
 	}
-	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		return []byte(config.Secret), nil
-	}
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, keyFunc)
+	accessClaims, err := a.ParseToken(accessToken, config)
 	if err != nil {
-		return "", err
-	}
-	claims, ok := token.Claims.(*Claims)
-	if !ok || !token.Valid {
-		return "", jwt.ValidationError{Errors: jwt.ValidationErrorClaimsInvalid}
+		return "", "", err
 	}
 	jwt.TimeFunc = time.Now
-	claims.StandardClaims.ExpiresAt = time.Now().Unix() + config.Expire
 
-	newToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return newToken.SignedString([]byte(config.Secret))
+	if refreshClaims.UserId != accessClaims.UserId || refreshClaims.Issuer != accessClaims.Issuer {
+		return "", "", exception.InvalidRefreshTokenError
+	}
+	newRefreshToken, err := a.GenerateToken(refreshClaims.UserId, true, config)
+	newAccessToken, err1 := a.GenerateToken(refreshClaims.UserId, false, config)
+	if err == nil {
+		err = err1
+	}
+	return newRefreshToken, newAccessToken, err
 }
 
 func (a *authUtil) IsTokenExpired(err error) bool {
