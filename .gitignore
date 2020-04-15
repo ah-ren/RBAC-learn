@@ -10,3 +10,5 @@ release/
 log/
 
 ### My ###
+docs/script/*.py
+gendoc.sh

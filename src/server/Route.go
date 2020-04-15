@@ -48,8 +48,8 @@ func setupApiRoute(engine *gin.Engine, dic *xdi.DiContainer) {
 			authGroup.POST("/login", authCtrl.Login)
 			authGroup.POST("/register", authCtrl.Register)
 			authGroup.POST("/refresh", authCtrl.RefreshToken)
-			authGroup.POST("/logout", authCtrl.Logout)
-			authGroup.PUT("/password", authCtrl.UpdatePassword)
+			authGroup.POST("/logout", jwtMw, casbinMw, authCtrl.Logout)
+			authGroup.PUT("/password", jwtMw, casbinMw, authCtrl.ResetPassword)
 			authGroup.GET("", jwtMw, casbinMw, authCtrl.CurrentUser)
 		}
 		userGroup := v1.Group("/user")

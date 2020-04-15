@@ -2,11 +2,12 @@ package server
 
 import (
 	"fmt"
+	_ "github.com/Aoi-hosizora/RBAC-learn/docs"
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
 	"github.com/Aoi-hosizora/RBAC-learn/src/middleware"
 	"github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"log"
 	"net/http"

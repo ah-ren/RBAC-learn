@@ -21,6 +21,12 @@ func main() {
 	}
 }
 
+// @Title            rbac learn
+// @Version          1.0
+// @Description      my rbac learning repository
+// @Host             127.0.0.1:10001
+// @BasePath         /
+// @GlobalSecurity   Jwt Authorization header
 func run() {
 	cfg, err := config.Load(configPath)
 	if err != nil {

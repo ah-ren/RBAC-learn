@@ -29,6 +29,13 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 	return ctrl
 }
 
+// @Router              /v1/user [GET]
+// @Summary             Query user list
+// @Security            Jwt
+// @Tag                 User
+// @Param               page  query integer false "Query page"(default:1)
+// @Param               limit query integer false "Page size" (default:10)
+// @ResponseModel 200   #Result<Page<UserDto>>
 func (u *UserController) QueryAll(c *gin.Context) {
 	page, limit := param.BindPage(c, u.Config)
 	total, users := u.UserRepo.QueryAll(page, limit)
@@ -37,6 +44,12 @@ func (u *UserController) QueryAll(c *gin.Context) {
 	result.Ok().SetPage(int32(len(usersDto)), page, total, usersDto).JSON(c)
 }
 
+// @Router              /v1/user/{uid} [GET]
+// @Summary             Query user
+// @Security            Jwt
+// @Tag                 User
+// @Param               uid path integer true "user id"
+// @ResponseModel 200   #Result<UserDto>
 func (u *UserController) Query(c *gin.Context) {
 	id, ok := param.BindId(c, "uid")
 	if !ok {
@@ -54,16 +67,23 @@ func (u *UserController) Query(c *gin.Context) {
 	result.Ok().SetData(userDto).JSON(c)
 }
 
+// @Router              /v1/user/{uid} [PUT]
+// @Summary             Update user
+// @Security            Jwt
+// @Tag                 User
+// @Param               uid   path integer    true "user id"
+// @Param               param body #UpdateUserParam true "request parameter"
+// @ResponseModel 200   #Result
 func (u *UserController) Update(c *gin.Context) {
 	uid, ok := param.BindId(c, "uid")
-	userParam := &param.UserParam{}
-	if err := c.ShouldBind(userParam); err != nil || !ok {
+	updateUserParam := &param.UpdateUserParam{}
+	if err := c.ShouldBind(updateUserParam); err != nil || !ok {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 
 	user := &po.User{ID: uid}
-	_ = u.Mapper.MapProp(userParam, user)
+	_ = u.Mapper.MapProp(updateUserParam, user)
 
 	status := u.UserRepo.Update(user)
 	if status == database.DbNotFound {
@@ -74,10 +94,15 @@ func (u *UserController) Update(c *gin.Context) {
 		return
 	}
 
-	userDto := xcondition.First(u.Mapper.Map(user, &dto.UserDto{})).(*dto.UserDto)
-	result.Ok().SetData(userDto).JSON(c)
+	result.Ok().JSON(c)
 }
 
+// @Router              /v1/user/{uid} [DELETE]
+// @Summary             Delete user
+// @Security            Jwt
+// @Tag                 User
+// @Param               uid path integer true "user id"
+// @ResponseModel 200   #Result
 func (u *UserController) Delete(c *gin.Context) {
 	id, ok := param.BindId(c, "uid")
 	if !ok {

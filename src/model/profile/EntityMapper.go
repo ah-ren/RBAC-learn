@@ -31,9 +31,9 @@ func CreateEntityMappers() *xentity.EntityMappers {
 		return nil
 	}))
 
-	// userParam -> userPo
-	mappers.AddMapper(xentity.NewEntityMapper(&param.UserParam{}, func() interface{} { return &po.User{} }, func(from interface{}, to interface{}) error {
-		userParam := from.(*param.UserParam)
+	// updateUserParam -> userPo
+	mappers.AddMapper(xentity.NewEntityMapper(&param.UpdateUserParam{}, func() interface{} { return &po.User{} }, func(from interface{}, to interface{}) error {
+		userParam := from.(*param.UpdateUserParam)
 		user := to.(*po.User)
 
 		user.Name = userParam.Name

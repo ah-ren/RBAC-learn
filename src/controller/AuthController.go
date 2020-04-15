@@ -30,6 +30,11 @@ func NewAuthController(dic *xdi.DiContainer) *AuthController {
 	return ctrl
 }
 
+// @Router              /v1/auth/login [POST]
+// @Summary             Login
+// @Tag                 Authorization
+// @Param               param body #LoginParam true "Request parameter"
+// @ResponseModel 200   #Result<LoginDto>
 func (a *AuthController) Login(c *gin.Context) {
 	loginParam := &param.LoginParam{}
 	if err := c.ShouldBind(loginParam); err != nil {
@@ -75,6 +80,11 @@ func (a *AuthController) Login(c *gin.Context) {
 	}).JSON(c)
 }
 
+// @Router              /v1/auth/register [POST]
+// @Summary             Register
+// @Tag                 Authorization
+// @Param               param body #RegisterParam true "Request parameter"
+// @ResponseModel 200   #Result<UserDto>
 func (a *AuthController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
 	if err := c.ShouldBind(registerParam); err != nil {
@@ -101,6 +111,11 @@ func (a *AuthController) Register(c *gin.Context) {
 	result.Ok().SetData(userDto).JSON(c)
 }
 
+// @Router              /v1/auth/token [POST]
+// @Summary             Refresh token
+// @Tag                 Authorization
+// @Param               param body #TokenParam true "Request parameter"
+// @ResponseModel 200   #Result<TokenDto>
 func (a *AuthController) RefreshToken(c *gin.Context) {
 	tokenParam := &param.TokenParam{}
 	if err := c.ShouldBind(tokenParam); err != nil {
@@ -124,11 +139,16 @@ func (a *AuthController) RefreshToken(c *gin.Context) {
 	}
 
 	result.Ok().SetData(&dto.TokenDto{
-		RefreshToken: refreshToken,
 		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}).JSON(c)
 }
 
+// @Router              /v1/auth [GET]
+// @Summary             Current user
+// @Security            Jwt
+// @Tag                 Authorization
+// @ResponseModel 200   #Result<UserDto>
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	user := a.JwtService.GetContextUser(c)
 
@@ -136,6 +156,11 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 	result.Ok().SetData(userDto).JSON(c)
 }
 
+// @Router              /v1/auth/logout [POST]
+// @Summary             Logout
+// @Security            Jwt
+// @Tag                 Authorization
+// @ResponseModel 200   #Result
 func (a *AuthController) Logout(c *gin.Context) {
 	token := a.JwtService.GetToken(c)
 	ok := a.TokenRepo.Delete(token)
@@ -147,7 +172,13 @@ func (a *AuthController) Logout(c *gin.Context) {
 	result.Ok().JSON(c)
 }
 
-func (a *AuthController) UpdatePassword(c *gin.Context) {
+// @Router              /v1/auth/password [PUT]
+// @Summary             Reset password
+// @Security            Jwt
+// @Tag                 Authorization
+// @Param               param body #PasswordParam true "Request parameter"
+// @ResponseModel 200   #Result
+func (a *AuthController) ResetPassword(c *gin.Context) {
 	user := a.JwtService.GetContextUser(c)
 	passParam := &param.PasswordParam{}
 	if err := c.ShouldBind(passParam); err != nil {
