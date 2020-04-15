@@ -6,6 +6,7 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
 	"github.com/Aoi-hosizora/RBAC-learn/src/controller"
 	"github.com/Aoi-hosizora/RBAC-learn/src/middleware"
+	"github.com/Aoi-hosizora/RBAC-learn/src/service"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -27,15 +28,15 @@ func setupCommonRoute(engine *gin.Engine) {
 
 func setupApiRoute(engine *gin.Engine, dic *xdi.DiContainer) {
 	container := &struct {
-		Config        *config.Config            `di:"~"`
-		Db            *gorm.DB                  `di:"~"`
-		JwtService    *middleware.JwtService    `di:"~"`
-		CasbinService *middleware.CasbinService `di:"~"`
+		Config        *config.ServerConfig   `di:"~"`
+		Db            *gorm.DB               `di:"~"`
+		JwtService    *service.JwtService    `di:"~"`
+		CasbinService *service.CasbinService `di:"~"`
 	}{}
 	dic.InjectForce(container)
 
-	jwtMw := container.JwtService.JwtMiddleware()
-	casbinMw := container.CasbinService.CasbinMiddleware()
+	jwtMw := middleware.JwtMiddleware(container.JwtService)
+	casbinMw := middleware.CasbinMiddleware(container.CasbinService)
 
 	authCtrl := controller.NewAuthController(dic)
 	userCtrl := controller.NewUserController(dic)

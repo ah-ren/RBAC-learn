@@ -20,7 +20,7 @@ func setupBinding() {
 	xgin.SetupRegexBinding()
 }
 
-func setupLogger(config *config.Config) *logrus.Logger {
+func setupLogger(config *config.ServerConfig) *logrus.Logger {
 	logger := logrus.New()
 	logLevel := logrus.WarnLevel
 	if config.MetaConfig.RunMode == "debug" {

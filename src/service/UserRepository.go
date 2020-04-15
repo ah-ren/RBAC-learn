@@ -1,4 +1,4 @@
-package dao
+package service
 
 import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/database"

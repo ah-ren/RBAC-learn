@@ -12,10 +12,10 @@ import (
 
 type Server struct {
 	Server *gin.Engine
-	Config *config.Config
+	Config *config.ServerConfig
 }
 
-func NewServer(config *config.Config) *Server {
+func NewServer(config *config.ServerConfig) *Server {
 	engine := gin.New()
 	gin.SetMode(config.MetaConfig.RunMode)
 

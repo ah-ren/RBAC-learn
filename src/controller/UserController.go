@@ -5,11 +5,10 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/result"
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
 	"github.com/Aoi-hosizora/RBAC-learn/src/database"
-	"github.com/Aoi-hosizora/RBAC-learn/src/database/dao"
-	"github.com/Aoi-hosizora/RBAC-learn/src/middleware"
 	"github.com/Aoi-hosizora/RBAC-learn/src/model/dto"
 	"github.com/Aoi-hosizora/RBAC-learn/src/model/param"
 	"github.com/Aoi-hosizora/RBAC-learn/src/model/po"
+	"github.com/Aoi-hosizora/RBAC-learn/src/service"
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xentity"
@@ -18,10 +17,10 @@ import (
 )
 
 type UserController struct {
-	Config     *config.Config         `di:"~"`
-	JwtService *middleware.JwtService `di:"~"`
-	Mapper     *xentity.EntityMappers `di:"~"`
-	UserRepo   *dao.UserRepository    `di:"~"`
+	Config     *config.ServerConfig    `di:"~"`
+	Mapper     *xentity.EntityMappers  `di:"~"`
+	JwtService *service.JwtService     `di:"~"`
+	UserRepo   *service.UserRepository `di:"~"`
 }
 
 func NewUserController(dic *xdi.DiContainer) *UserController {

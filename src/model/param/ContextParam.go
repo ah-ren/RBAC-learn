@@ -18,7 +18,7 @@ func BindId(c *gin.Context, field string) (uint32, bool) {
 	}
 }
 
-func BindPage(c *gin.Context, config *config.Config) (p int32, l int32) {
+func BindPage(c *gin.Context, config *config.ServerConfig) (p int32, l int32) {
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil || page <= 0 {
 		page = 1

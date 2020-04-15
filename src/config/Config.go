@@ -34,19 +34,19 @@ type MySqlConfig struct {
 	IsLog    bool   `yaml:"log"`
 }
 
-type Config struct {
+type ServerConfig struct {
 	MetaConfig   *MetaConfig   `yaml:"meta"`
 	JwtConfig    *JwtConfig    `yaml:"jwt"`
 	CasbinConfig *CasbinConfig `yaml:"casbin"`
 	MySqlConfig  *MySqlConfig  `yaml:"mysql"`
 }
 
-func Load(path string) (*Config, error) {
+func Load(path string) (*ServerConfig, error) {
 	f, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	config := &Config{}
+	config := &ServerConfig{}
 	err = yaml.Unmarshal(f, config)
 	if err != nil {
 		return nil, err
