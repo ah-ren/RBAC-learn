@@ -17,10 +17,10 @@ import (
 )
 
 type UserController struct {
-	Config     *config.ServerConfig    `di:"~"`
-	Mapper     *xentity.EntityMappers  `di:"~"`
-	JwtService *service.JwtService     `di:"~"`
-	UserRepo   *service.UserRepository `di:"~"`
+	Config     *config.ServerConfig   `di:"~"`
+	Mapper     *xentity.EntityMappers `di:"~"`
+	JwtService *service.JwtService    `di:"~"`
+	UserRepo   *service.UserService   `di:"~"`
 }
 
 func NewUserController(dic *xdi.DiContainer) *UserController {

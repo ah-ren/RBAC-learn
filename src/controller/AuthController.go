@@ -17,10 +17,11 @@ import (
 )
 
 type AuthController struct {
-	Config     *config.ServerConfig    `di:"~"`
-	Mapper     *xentity.EntityMappers  `di:"~"`
-	JwtService *service.JwtService     `di:"~"`
-	UserRepo   *service.UserRepository `di:"~"`
+	Config     *config.ServerConfig   `di:"~"`
+	Mapper     *xentity.EntityMappers `di:"~"`
+	JwtService *service.JwtService    `di:"~"`
+	UserRepo   *service.UserService   `di:"~"`
+	TokenRepo  *service.TokenService  `di:"~"`
 }
 
 func NewAuthController(dic *xdi.DiContainer) *AuthController {
@@ -58,6 +59,11 @@ func (a *AuthController) Login(c *gin.Context) {
 	refreshToken, err := util.AuthUtil.GenerateToken(user.ID, true, a.Config.JwtConfig)
 	if err != nil {
 		result.Error(exception.LoginError).SetData(err).JSON(c)
+		return
+	}
+	ok := a.TokenRepo.Insert(accessToken, user.ID)
+	if !ok {
+		result.Error(exception.LoginError).JSON(c)
 		return
 	}
 
@@ -102,13 +108,18 @@ func (a *AuthController) RefreshToken(c *gin.Context) {
 		return
 	}
 
-	refreshToken, accessToken, err := util.AuthUtil.RefreshToken(tokenParam.RefreshToken, tokenParam.AccessToken, a.Config.JwtConfig)
+	uid, refreshToken, accessToken, err := util.AuthUtil.RefreshToken(tokenParam.RefreshToken, tokenParam.AccessToken, a.Config.JwtConfig)
 	if err != nil {
 		if err == exception.InvalidRefreshTokenError {
 			result.Error(exception.InvalidRefreshTokenError).JSON(c)
 		} else {
 			result.Error(exception.RefreshTokenError).JSON(c)
 		}
+		return
+	}
+	ok := a.TokenRepo.Insert(accessToken, uid)
+	if !ok {
+		result.Error(exception.RefreshTokenError).JSON(c)
 		return
 	}
 
@@ -123,4 +134,43 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 
 	userDto := xcondition.First(a.Mapper.Map(user, &dto.UserDto{})).(*dto.UserDto)
 	result.Ok().SetData(userDto).JSON(c)
+}
+
+func (a *AuthController) Logout(c *gin.Context) {
+	token := a.JwtService.GetToken(c)
+	ok := a.TokenRepo.Delete(token)
+	if !ok {
+		result.Error(exception.LogoutError).JSON(c)
+		return
+	}
+
+	result.Ok().JSON(c)
+}
+
+func (a *AuthController) UpdatePassword(c *gin.Context) {
+	user := a.JwtService.GetContextUser(c)
+	passParam := &param.PasswordParam{}
+	if err := c.ShouldBind(passParam); err != nil {
+		result.Error(exception.RequestParamError).JSON(c)
+		return
+	}
+
+	encrypted, err := util.AuthUtil.EncryptPassword(passParam.Password)
+	if err != nil {
+		result.Error(exception.UpdatePasswordError).JSON(c)
+		return
+	}
+	user.Password = encrypted
+
+	status := a.UserRepo.Update(user)
+	if status == database.DbNotFound {
+		result.Error(exception.UserNotFoundError).JSON(c)
+		return
+	} else if status == database.DbFailed {
+		result.Error(exception.UpdatePasswordError).JSON(c)
+		return
+	}
+	_ = a.TokenRepo.DeleteAll(user.ID)
+
+	result.Ok().JSON(c)
 }

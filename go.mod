@@ -11,10 +11,13 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.2
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/jinzhu/gorm v1.9.12
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644
 	github.com/sirupsen/logrus v1.5.0
 	github.com/snowzach/rotatefilehook v0.0.0-20180327172521-2f64f265f58c
+	github.com/swaggo/gin-swagger v1.2.0
+	github.com/swaggo/swag v1.6.5
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.2.8

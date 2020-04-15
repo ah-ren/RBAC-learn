@@ -6,6 +6,8 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/middleware"
 	"github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"log"
 	"net/http"
 )
@@ -30,8 +32,9 @@ func NewServer(config *config.ServerConfig) *Server {
 	if gin.Mode() == "debug" {
 		ginpprof.Wrap(engine)
 	}
-	setupCommonRoute(engine)
+	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	setupApiRoute(engine, dic)
+	setupCommonRoute(engine)
 
 	return &Server{
 		Server: engine,

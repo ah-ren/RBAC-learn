@@ -71,13 +71,13 @@ func (a *authUtil) ParseToken(accessToken string, config *config.JwtConfig) (*Cl
 	return claims, nil
 }
 
-func (a *authUtil) RefreshToken(refreshToken string, accessToken string, config *config.JwtConfig) (refresh string, access string, err error) {
+func (a *authUtil) RefreshToken(refreshToken string, accessToken string, config *config.JwtConfig) (uid uint32, refresh string, access string, err error) {
 	refreshClaims, err := a.ParseToken(refreshToken, config)
 	if err != nil {
 		if a.IsTokenExpired(err) {
-			return "", "", exception.InvalidRefreshTokenError
+			return 0, "", "", exception.InvalidRefreshTokenError
 		}
-		return "", "", err
+		return 0, "", "", err
 	}
 
 	jwt.TimeFunc = func() time.Time {
@@ -85,19 +85,19 @@ func (a *authUtil) RefreshToken(refreshToken string, accessToken string, config 
 	}
 	accessClaims, err := a.ParseToken(accessToken, config)
 	if err != nil {
-		return "", "", err
+		return 0, "", "", err
 	}
 	jwt.TimeFunc = time.Now
 
 	if refreshClaims.UserId != accessClaims.UserId || refreshClaims.Issuer != accessClaims.Issuer {
-		return "", "", exception.InvalidRefreshTokenError
+		return 0, "", "", exception.InvalidRefreshTokenError
 	}
 	newRefreshToken, err := a.GenerateToken(refreshClaims.UserId, true, config)
 	newAccessToken, err1 := a.GenerateToken(refreshClaims.UserId, false, config)
 	if err == nil {
 		err = err1
 	}
-	return newRefreshToken, newAccessToken, err
+	return refreshClaims.UserId, newRefreshToken, newAccessToken, err
 }
 
 func (a *authUtil) IsTokenExpired(err error) bool {

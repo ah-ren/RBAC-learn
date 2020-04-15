@@ -7,17 +7,17 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type UserRepository struct {
+type UserService struct {
 	Db *gorm.DB `di:"~"`
 }
 
-func NewUserRepository(dic *xdi.DiContainer) *UserRepository {
-	repo := &UserRepository{}
-	dic.InjectForce(repo)
-	return repo
+func NewUserService(dic *xdi.DiContainer) *UserService {
+	srv := &UserService{}
+	dic.InjectForce(srv)
+	return srv
 }
 
-func (u *UserRepository) QueryAll(page int32, limit int32) (int32, []*po.User) {
+func (u *UserService) QueryAll(page int32, limit int32) (int32, []*po.User) {
 	total := 0
 	users := make([]*po.User, 0)
 	u.Db.Model(&po.User{}).Count(&total)
@@ -25,7 +25,7 @@ func (u *UserRepository) QueryAll(page int32, limit int32) (int32, []*po.User) {
 	return int32(total), users
 }
 
-func (u *UserRepository) QueryById(id uint32) *po.User {
+func (u *UserService) QueryById(id uint32) *po.User {
 	user := &po.User{ID: id}
 	rdb := u.Db.Model(user).Where(user).First(user)
 	if rdb.RowsAffected == 0 {
@@ -34,7 +34,7 @@ func (u *UserRepository) QueryById(id uint32) *po.User {
 	return user
 }
 
-func (u *UserRepository) Insert(user *po.User) database.DbStatus {
+func (u *UserService) Insert(user *po.User) database.DbStatus {
 	rdb := u.Db.Model(user).Create(user)
 	if rdb.Error != nil || rdb.RowsAffected == 0 {
 		return database.DbFailed
@@ -42,7 +42,7 @@ func (u *UserRepository) Insert(user *po.User) database.DbStatus {
 	return database.DbSuccess
 }
 
-func (u *UserRepository) Update(user *po.User) database.DbStatus {
+func (u *UserService) Update(user *po.User) database.DbStatus {
 	rdb := u.Db.Model(user).Update(user)
 	if rdb.Error != nil {
 		return database.DbFailed
@@ -52,7 +52,7 @@ func (u *UserRepository) Update(user *po.User) database.DbStatus {
 	return database.DbSuccess
 }
 
-func (u *UserRepository) Delete(id uint32) database.DbStatus {
+func (u *UserService) Delete(id uint32) database.DbStatus {
 	rdb := u.Db.Model(&po.User{}).Delete(&po.User{ID: id})
 	if rdb.Error != nil {
 		return database.DbFailed

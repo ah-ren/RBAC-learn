@@ -13,17 +13,6 @@ type MetaConfig struct {
 	MaxPageSize int32  `yaml:"max-page-size"`
 }
 
-type JwtConfig struct {
-	Secret        string `yaml:"secret"`
-	Issuer        string `yaml:"issuer"`
-	Expire        int64  `yaml:"expire"`
-	RefreshExpire int64  `yaml:"refresh-expire"`
-}
-
-type CasbinConfig struct {
-	ConfigPath string `yaml:"config-path"`
-}
-
 type MySqlConfig struct {
 	Host     string `yaml:"host"`
 	Port     int32  `yaml:"port"`
@@ -34,11 +23,36 @@ type MySqlConfig struct {
 	IsLog    bool   `yaml:"log"`
 }
 
+type RedisConfig struct {
+	ConnType string `yaml:"conn-type"`
+	Host     string `yaml:"host"`
+	Port     int32  `yaml:"port"`
+	Db       int32  `yaml:"db"`
+	Password string `yaml:"password"`
+
+	ConnectTimeout int32 `yaml:"connect-timeout"`
+	ReadTimeout    int32 `yaml:"read-timeout"`
+	WriteTimeout   int32 `yaml:"write-timeout"`
+}
+
+type JwtConfig struct {
+	Secret        string `yaml:"secret"`
+	Issuer        string `yaml:"issuer"`
+	Expire        int64  `yaml:"expire"`
+	RefreshExpire int64  `yaml:"refresh-expire"`
+	RedisFmt      string `yaml:"redis-fmt"`
+}
+
+type CasbinConfig struct {
+	ConfigPath string `yaml:"config-path"`
+}
+
 type ServerConfig struct {
 	MetaConfig   *MetaConfig   `yaml:"meta"`
+	MySqlConfig  *MySqlConfig  `yaml:"mysql"`
+	RedisConfig  *RedisConfig  `yaml:"redis"`
 	JwtConfig    *JwtConfig    `yaml:"jwt"`
 	CasbinConfig *CasbinConfig `yaml:"casbin"`
-	MySqlConfig  *MySqlConfig  `yaml:"mysql"`
 }
 
 func Load(path string) (*ServerConfig, error) {

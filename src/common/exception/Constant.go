@@ -13,10 +13,12 @@ var (
 	CheckUserRoleError       = NewError(500, "failed to check user role")
 	RoleHasNoPermissionError = NewError(403, "role has no permission")
 
-	WrongPasswordError = NewError(401, "wrong password")
-	LoginError         = NewError(500, "login failed")
-	RegisterError      = NewError(500, "register failed")
-	RefreshTokenError  = NewError(500, "refresh token failed")
+	WrongPasswordError  = NewError(401, "wrong password")
+	LoginError          = NewError(500, "login failed")
+	RegisterError       = NewError(500, "register failed")
+	RefreshTokenError   = NewError(500, "refresh token failed")
+	LogoutError         = NewError(500, "logout failed")
+	UpdatePasswordError = NewError(500, "update password failed")
 )
 
 // User
