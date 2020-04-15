@@ -4,17 +4,20 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/exception"
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/result"
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
-	"github.com/Aoi-hosizora/RBAC-learn/src/database"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/casbin/casbin/v2"
+	gormadapter "github.com/casbin/gorm-adapter/v2"
 	"github.com/gin-gonic/gin"
-	string_adapter "github.com/qiangmzsx/string-adapter/v2"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/sirupsen/logrus"
 )
 
 type CasbinService struct {
-	Config     *config.Config             `di:"~"`
-	CasbinRepo *database.CasbinRepository `di:"~"`
-	JwtService *JwtService                `di:"~"`
+	Config     *config.Config `di:"~"`
+	Logger     *logrus.Logger `di:"~"`
+	Db         *gorm.DB       `di:"~"`
+	JwtService *JwtService    `di:"~"`
 }
 
 func NewCasbinService(dic *xdi.DiContainer) *CasbinService {
@@ -24,6 +27,10 @@ func NewCasbinService(dic *xdi.DiContainer) *CasbinService {
 }
 
 func (b *CasbinService) CasbinMiddleware() gin.HandlerFunc {
+	adapter, err := gormadapter.NewAdapterByDBUsePrefix(b.Db, "tbl_")
+	if err != nil {
+		panic(err)
+	}
 	return func(c *gin.Context) {
 		user := b.JwtService.GetContextUser(c)
 		if user == nil {
@@ -31,7 +38,7 @@ func (b *CasbinService) CasbinMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		ok, err := b.enforce(user.Role, c.Request.URL.Path, c.Request.Method)
+		ok, err := b.enforce(user.Role, c.FullPath(), c.Request.Method, adapter)
 		if err != nil {
 			c.Abort()
 			result.Error(exception.CheckUserRoleError).JSON(c)
@@ -46,8 +53,7 @@ func (b *CasbinService) CasbinMiddleware() gin.HandlerFunc {
 	}
 }
 
-func (b *CasbinService) enforce(sub string, obj string, act string) (bool, error) {
-	adapter := string_adapter.NewAdapter(b.CasbinRepo.String())
+func (b *CasbinService) enforce(sub string, obj string, act string, adapter *gormadapter.Adapter) (bool, error) {
 	enforcer, err := casbin.NewEnforcer(b.Config.CasbinConfig.ConfigPath, adapter)
 	if err != nil {
 		return false, err

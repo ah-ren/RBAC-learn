@@ -8,6 +8,7 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/middleware"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"net/http"
 )
 
@@ -27,6 +28,7 @@ func setupCommonRoute(engine *gin.Engine) {
 func setupApiRoute(engine *gin.Engine, dic *xdi.DiContainer) {
 	container := &struct {
 		Config        *config.Config            `di:"~"`
+		Db            *gorm.DB                  `di:"~"`
 		JwtService    *middleware.JwtService    `di:"~"`
 		CasbinService *middleware.CasbinService `di:"~"`
 	}{}
@@ -43,12 +45,16 @@ func setupApiRoute(engine *gin.Engine, dic *xdi.DiContainer) {
 		authGroup := v1.Group("/auth")
 		{
 			authGroup.POST("/login", authCtrl.Login)
+			authGroup.POST("/register", authCtrl.Register)
 			authGroup.POST("/refresh", authCtrl.RefreshToken)
 			authGroup.GET("", jwtMw, casbinMw, authCtrl.CurrentUser)
 		}
 		userGroup := v1.Group("/user")
 		{
 			userGroup.GET("", jwtMw, casbinMw, userCtrl.QueryAll)
+			userGroup.GET("/:uid", jwtMw, casbinMw, userCtrl.Query)
+			userGroup.PUT("/:uid", jwtMw, casbinMw, userCtrl.Update)
+			userGroup.DELETE("/:uid", jwtMw, casbinMw, userCtrl.Delete)
 		}
 	}
 }

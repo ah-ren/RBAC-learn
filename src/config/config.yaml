@@ -2,6 +2,8 @@ meta:
   run-mode: debug
   port: 10001
   log-path: ./log/console.log
+  def-page-size: 10
+  max-page-size: 30
 
 jwt:
   secret: 9C27D0C7C04BDA8A1F1B099CF4F9B1956AF5164F
@@ -11,3 +13,12 @@ jwt:
 
 casbin:
   config-path: ./src/config/rbac-model.conf
+
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  name: db_rbac
+  charset: utf8
+  user: root
+  password: 123
+  log: true

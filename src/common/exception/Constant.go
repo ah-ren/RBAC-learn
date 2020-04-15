@@ -15,5 +15,13 @@ var (
 
 	WrongPasswordError = NewError(401, "wrong password")
 	LoginError         = NewError(500, "login failed")
+	RegisterError      = NewError(500, "register failed")
 	RefreshTokenError  = NewError(500, "refresh token failed")
+)
+
+// User
+var (
+	UserNotFoundError = NewError(404, "user not found")
+	UserUpdateError   = NewError(500, "user update failed")
+	UserDeleteError   = NewError(500, "user delete failed")
 )

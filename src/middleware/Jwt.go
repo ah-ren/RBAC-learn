@@ -4,7 +4,7 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/exception"
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/result"
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
-	"github.com/Aoi-hosizora/RBAC-learn/src/database"
+	"github.com/Aoi-hosizora/RBAC-learn/src/database/dao"
 	"github.com/Aoi-hosizora/RBAC-learn/src/model/po"
 	"github.com/Aoi-hosizora/RBAC-learn/src/util"
 	"github.com/Aoi-hosizora/ahlib/xdi"
@@ -12,8 +12,8 @@ import (
 )
 
 type JwtService struct {
-	Config   *config.Config           `di:"~"`
-	UserRepo *database.UserRepository `di:"~"`
+	Config   *config.Config      `di:"~"`
+	UserRepo *dao.UserRepository `di:"~"`
 
 	_key string `di:"-"`
 }

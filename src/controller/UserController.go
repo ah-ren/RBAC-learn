@@ -1,11 +1,15 @@
 package controller
 
 import (
+	"github.com/Aoi-hosizora/RBAC-learn/src/common/exception"
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/result"
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
 	"github.com/Aoi-hosizora/RBAC-learn/src/database"
+	"github.com/Aoi-hosizora/RBAC-learn/src/database/dao"
 	"github.com/Aoi-hosizora/RBAC-learn/src/middleware"
 	"github.com/Aoi-hosizora/RBAC-learn/src/model/dto"
+	"github.com/Aoi-hosizora/RBAC-learn/src/model/param"
+	"github.com/Aoi-hosizora/RBAC-learn/src/model/po"
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xentity"
@@ -14,10 +18,10 @@ import (
 )
 
 type UserController struct {
-	Config     *config.Config           `di:"~"`
-	JwtService *middleware.JwtService   `di:"~"`
-	Mapper     *xentity.EntityMappers   `di:"~"`
-	UserRepo   *database.UserRepository `di:"~"`
+	Config     *config.Config         `di:"~"`
+	JwtService *middleware.JwtService `di:"~"`
+	Mapper     *xentity.EntityMappers `di:"~"`
+	UserRepo   *dao.UserRepository    `di:"~"`
 }
 
 func NewUserController(dic *xdi.DiContainer) *UserController {
@@ -27,7 +31,69 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 }
 
 func (u *UserController) QueryAll(c *gin.Context) {
-	users := u.UserRepo.QueryAll()
+	page, limit := param.BindPage(c, u.Config)
+	total, users := u.UserRepo.QueryAll(page, limit)
+
 	usersDto := xcondition.First(u.Mapper.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
-	result.Ok().SetPage(int32(len(usersDto)), 1, 200, usersDto).JSON(c)
+	result.Ok().SetPage(int32(len(usersDto)), page, total, usersDto).JSON(c)
+}
+
+func (u *UserController) Query(c *gin.Context) {
+	id, ok := param.BindId(c, "uid")
+	if !ok {
+		result.Error(exception.RequestParamError).JSON(c)
+		return
+	}
+
+	user := u.UserRepo.QueryById(id)
+	if user == nil {
+		result.Error(exception.UserNotFoundError).JSON(c)
+		return
+	}
+
+	userDto := xcondition.First(u.Mapper.Map(user, &dto.UserDto{})).(*dto.UserDto)
+	result.Ok().SetData(userDto).JSON(c)
+}
+
+func (u *UserController) Update(c *gin.Context) {
+	uid, ok := param.BindId(c, "uid")
+	userParam := &param.UserParam{}
+	if err := c.ShouldBind(userParam); err != nil || !ok {
+		result.Error(exception.RequestParamError).JSON(c)
+		return
+	}
+
+	user := &po.User{ID: uid}
+	_ = u.Mapper.MapProp(userParam, user)
+
+	status := u.UserRepo.Update(user)
+	if status == database.DbNotFound {
+		result.Error(exception.UserNotFoundError).JSON(c)
+		return
+	} else if status == database.DbFailed {
+		result.Error(exception.UserUpdateError).JSON(c)
+		return
+	}
+
+	userDto := xcondition.First(u.Mapper.Map(user, &dto.UserDto{})).(*dto.UserDto)
+	result.Ok().SetData(userDto).JSON(c)
+}
+
+func (u *UserController) Delete(c *gin.Context) {
+	id, ok := param.BindId(c, "uid")
+	if !ok {
+		result.Error(exception.RequestParamError).JSON(c)
+		return
+	}
+
+	status := u.UserRepo.Delete(id)
+	if status == database.DbNotFound {
+		result.Error(exception.UserNotFoundError).JSON(c)
+		return
+	} else if status == database.DbFailed {
+		result.Error(exception.UserDeleteError).JSON(c)
+		return
+	}
+
+	result.Ok().JSON(c)
 }

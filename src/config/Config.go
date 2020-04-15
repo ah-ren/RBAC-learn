@@ -6,9 +6,11 @@ import (
 )
 
 type MetaConfig struct {
-	RunMode string `yaml:"run-mode"`
-	Port    int    `yaml:"port"`
-	LogPath string `yaml:"log-path"`
+	RunMode     string `yaml:"run-mode"`
+	Port        int    `yaml:"port"`
+	LogPath     string `yaml:"log-path"`
+	DefPageSize int32  `yaml:"def-page-size"`
+	MaxPageSize int32  `yaml:"max-page-size"`
 }
 
 type JwtConfig struct {
@@ -22,10 +24,21 @@ type CasbinConfig struct {
 	ConfigPath string `yaml:"config-path"`
 }
 
+type MySqlConfig struct {
+	Host     string `yaml:"host"`
+	Port     int32  `yaml:"port"`
+	Name     string `yaml:"name"`
+	Charset  string `yaml:"charset"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+	IsLog    bool   `yaml:"log"`
+}
+
 type Config struct {
 	MetaConfig   *MetaConfig   `yaml:"meta"`
 	JwtConfig    *JwtConfig    `yaml:"jwt"`
 	CasbinConfig *CasbinConfig `yaml:"casbin"`
+	MySqlConfig  *MySqlConfig  `yaml:"mysql"`
 }
 
 func Load(path string) (*Config, error) {
