@@ -3,6 +3,7 @@
 .vscode/
 .ionide/
 .history/
+*.rdb
 
 ### Build ###
 build/

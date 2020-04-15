@@ -13,7 +13,7 @@ type UserService struct {
 
 func NewUserService(dic *xdi.DiContainer) *UserService {
 	srv := &UserService{}
-	dic.InjectForce(srv)
+	dic.MustInject(srv)
 	return srv
 }
 
@@ -25,13 +25,13 @@ func (u *UserService) QueryAll(page int32, limit int32) (int32, []*po.User) {
 	return int32(total), users
 }
 
-func (u *UserService) QueryById(id uint32) *po.User {
+func (u *UserService) QueryById(id uint32) (*po.User, bool) {
 	user := &po.User{ID: id}
 	rdb := u.Db.Model(user).Where(user).First(user)
 	if rdb.RowsAffected == 0 {
-		return nil
+		return nil, false
 	}
-	return user
+	return user, true
 }
 
 func (u *UserService) Insert(user *po.User) database.DbStatus {

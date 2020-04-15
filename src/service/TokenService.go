@@ -15,7 +15,7 @@ type TokenService struct {
 
 func NewTokenService(dic *xdi.DiContainer) *TokenService {
 	srv := &TokenService{}
-	dic.InjectForce(srv)
+	dic.MustInject(srv)
 	return srv
 }
 

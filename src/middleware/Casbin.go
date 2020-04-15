@@ -8,19 +8,19 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-func CasbinMiddleware(srv *service.CasbinService) gin.HandlerFunc {
-	adapter := srv.GetAdapter()
+func CasbinMiddleware(jwtService *service.JwtService, casbinService *service.CasbinService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		sub, ok := srv.GetContextRole(c)
-		if !ok {
+		user := jwtService.GetContextUser(c)
+		if user == nil {
 			c.Abort()
 			result.Error(exception.CheckUserRoleError).JSON(c)
 			return
 		}
+		sub := user.Role
 		obj := c.FullPath()
 		act := c.Request.Method
 
-		ok, err := srv.Enforce(sub, obj, act, adapter)
+		ok, err := casbinService.Enforce(sub, obj, act)
 		if err != nil {
 			c.Abort()
 			result.Error(exception.CheckUserRoleError).JSON(c)

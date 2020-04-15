@@ -3,7 +3,7 @@ module github.com/Aoi-hosizora/RBAC-learn
 go 1.13
 
 require (
-	github.com/Aoi-hosizora/ahlib v0.0.0-20200414140328-f2b385fe9c17
+	github.com/Aoi-hosizora/ahlib v0.0.0-20200415104900-cd2b9233b76b
 	github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200227043052-1d9e28f9af56
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
 	github.com/casbin/casbin/v2 v2.2.2

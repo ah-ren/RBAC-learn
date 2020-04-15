@@ -20,7 +20,7 @@ type JwtService struct {
 
 func NewJwtService(dic *xdi.DiContainer) *JwtService {
 	srv := &JwtService{UserKey: "user"}
-	dic.InjectForce(srv)
+	dic.MustInject(srv)
 	return srv
 }
 
@@ -54,8 +54,8 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.ServerError) {
 	}
 
 	// mysql
-	user := j.UserRepo.QueryById(claims.UserId)
-	if user == nil {
+	user, ok := j.UserRepo.QueryById(claims.UserId)
+	if !ok {
 		return nil, exception.UnAuthorizedError
 	}
 
@@ -64,16 +64,22 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.ServerError) {
 
 func (j *JwtService) GetContextUser(c *gin.Context) *po.User {
 	_user, exist := c.Get(j.UserKey)
-	if !exist {
-		result.Error(exception.UnAuthorizedError).JSON(c)
-		c.Abort()
-		return nil
+	if exist { // has jwtMw
+		user, ok := _user.(*po.User)
+		if !ok {
+			result.Error(exception.UnAuthorizedError).JSON(c)
+			c.Abort() // abort
+			return nil
+		}
+		return user
+	} else { // no jwtMw
+		token := j.GetToken(c)
+		user, err := j.JwtCheck(token)
+		if err != nil {
+			return nil // auth failed
+		} else {
+			c.Set(j.UserKey, user)
+			return user
+		}
 	}
-	user, ok := _user.(*po.User)
-	if !ok {
-		result.Error(exception.UnAuthorizedError).JSON(c)
-		c.Abort()
-		return nil
-	}
-	return user
 }

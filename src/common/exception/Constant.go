@@ -27,3 +27,12 @@ var (
 	UserUpdateError   = NewError(500, "user update failed")
 	UserDeleteError   = NewError(500, "user delete failed")
 )
+
+// Role
+var (
+	PolicyQueryError    = NewError(500, "get roles failed")
+	PolicyInsertError   = NewError(500, "insert policy failed")
+	PolicyDeleteError   = NewError(500, "delete policy failed")
+	PolicyNotFountError = NewError(404, "policy not found")
+	PolicyExistedError  = NewError(409, "policy has existed")
+)

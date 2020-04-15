@@ -9,7 +9,6 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/service"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"net/http"
 )
 
@@ -29,20 +28,17 @@ func setupCommonRoute(engine *gin.Engine) {
 func setupApiRoute(engine *gin.Engine, dic *xdi.DiContainer) {
 	container := &struct {
 		Config        *config.ServerConfig   `di:"~"`
-		Db            *gorm.DB               `di:"~"`
 		JwtService    *service.JwtService    `di:"~"`
 		CasbinService *service.CasbinService `di:"~"`
 	}{}
-	dic.InjectForce(container)
+	dic.MustInject(container)
 
 	jwtMw := middleware.JwtMiddleware(container.JwtService)
-	casbinMw := middleware.CasbinMiddleware(container.CasbinService)
-
-	authCtrl := controller.NewAuthController(dic)
-	userCtrl := controller.NewUserController(dic)
+	casbinMw := middleware.CasbinMiddleware(container.JwtService, container.CasbinService)
 
 	v1 := engine.Group("/v1")
 	{
+		authCtrl := controller.NewAuthController(dic)
 		authGroup := v1.Group("/auth")
 		{
 			authGroup.POST("/login", authCtrl.Login)
@@ -52,12 +48,22 @@ func setupApiRoute(engine *gin.Engine, dic *xdi.DiContainer) {
 			authGroup.PUT("/password", jwtMw, casbinMw, authCtrl.ResetPassword)
 			authGroup.GET("", jwtMw, casbinMw, authCtrl.CurrentUser)
 		}
+
+		userCtrl := controller.NewUserController(dic)
 		userGroup := v1.Group("/user")
 		{
 			userGroup.GET("", jwtMw, casbinMw, userCtrl.QueryAll)
 			userGroup.GET("/:uid", jwtMw, casbinMw, userCtrl.Query)
 			userGroup.PUT("/:uid", jwtMw, casbinMw, userCtrl.Update)
 			userGroup.DELETE("/:uid", jwtMw, casbinMw, userCtrl.Delete)
+		}
+
+		policyCtrl := controller.NewPolicyController(dic)
+		policyGroup := v1.Group("/policy")
+		{
+			policyGroup.GET("", jwtMw, casbinMw, policyCtrl.Query)
+			policyGroup.POST("", jwtMw, casbinMw, policyCtrl.Insert)
+			policyGroup.DELETE("", jwtMw, casbinMw, policyCtrl.Delete)
 		}
 	}
 }

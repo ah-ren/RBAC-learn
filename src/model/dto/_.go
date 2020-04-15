@@ -36,6 +36,13 @@ package dto
 // @Property      limit  integer          true "page size"
 // @Property      data   array(#_UserDto) true "response data"
 
+// @Model         Page<PolicyDto>
+// @Description   policy page
+// @Property      total  integer            true "data count"
+// @Property      page   integer            true "current page"
+// @Property      limit  integer            true "page size"
+// @Property      data   array(#_PolicyDto) true "response data"
+
 //////////////////////////////////////////////////////////////////////////////////////
 // PageResult
 
@@ -44,3 +51,9 @@ package dto
 // @Property      code      integer                true "status code"
 // @Property      message   string                 true "status message"
 // @Property      data      object(#Page<UserDto>) true "response data"
+
+// @Model         Result<Page<PolicyDto>>
+// @Description   policy page response
+// @Property      code      integer                  true "status code"
+// @Property      message   string                   true "status message"
+// @Property      data      object(#Page<PolicyDto>) true "response data"

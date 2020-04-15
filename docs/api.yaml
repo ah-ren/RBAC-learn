@@ -134,6 +134,66 @@ paths:
         '200':
           schema:
             $ref: '#/definitions/Result'
+  /v1/policy:
+    get:
+      operationId: v1-policy-get
+      summary: Query policy list
+      tags:
+      - Policy
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      security:
+      - Jwt: []
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/Result<Page<PolicyDto>>'
+    post:
+      operationId: v1-policy-post
+      summary: Insert policy list
+      tags:
+      - Policy
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: param
+        in: body
+        required: true
+        description: request parameter
+        schema:
+          $ref: '#/definitions/PolicyParam'
+      security:
+      - Jwt: []
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/Result'
+    delete:
+      operationId: v1-policy-delete
+      summary: Delete policy list
+      tags:
+      - Policy
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: param
+        in: body
+        required: true
+        description: request parameter
+        schema:
+          $ref: '#/definitions/PolicyParam'
+      security:
+      - Jwt: []
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/Result'
   /v1/user:
     get:
       operationId: v1-user-get
@@ -252,6 +312,24 @@ definitions:
         type: string
       refresh-token:
         description: refresh token
+        type: string
+  _PolicyDto:
+    title: _PolicyDto
+    description: policy response
+    type: object
+    required:
+    - role
+    - path
+    - method
+    properties:
+      role:
+        description: policy role (sub)
+        type: string
+      path:
+        description: policy path (obj)
+        type: string
+      method:
+        description: policy method (act)
         type: string
   _TokenDto:
     title: _TokenDto
@@ -380,6 +458,30 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/_UserDto'
+  Page<PolicyDto>:
+    title: Page<PolicyDto>
+    description: policy page
+    type: object
+    required:
+    - total
+    - page
+    - limit
+    - data
+    properties:
+      total:
+        description: data count
+        type: integer
+      page:
+        description: current page
+        type: integer
+      limit:
+        description: page size
+        type: integer
+      data:
+        description: response data
+        type: array
+        items:
+          $ref: '#/definitions/_PolicyDto'
   Result<Page<UserDto>>:
     title: Result<Page<UserDto>>
     description: user page response
@@ -399,6 +501,25 @@ definitions:
         description: response data
         type: object
         $ref: '#/definitions/Page<UserDto>'
+  Result<Page<PolicyDto>>:
+    title: Result<Page<PolicyDto>>
+    description: policy page response
+    type: object
+    required:
+    - code
+    - message
+    - data
+    properties:
+      code:
+        description: status code
+        type: integer
+      message:
+        description: status message
+        type: string
+      data:
+        description: response data
+        type: object
+        $ref: '#/definitions/Page<PolicyDto>'
   LoginParam:
     title: LoginParam
     description: login request parameter
@@ -449,6 +570,24 @@ definitions:
     properties:
       password:
         description: new password
+        type: string
+  PolicyParam:
+    title: PolicyParam
+    description: insert / delete policy request parameter
+    type: object
+    required:
+    - role
+    - path
+    - method
+    properties:
+      role:
+        description: policy role
+        type: string
+      path:
+        description: policy path
+        type: string
+      method:
+        description: policy method
         type: string
   UpdateUserParam:
     title: UpdateUserParam

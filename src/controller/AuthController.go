@@ -17,16 +17,16 @@ import (
 )
 
 type AuthController struct {
-	Config     *config.ServerConfig   `di:"~"`
-	Mapper     *xentity.EntityMappers `di:"~"`
-	JwtService *service.JwtService    `di:"~"`
-	UserRepo   *service.UserService   `di:"~"`
-	TokenRepo  *service.TokenService  `di:"~"`
+	Config       *config.ServerConfig   `di:"~"`
+	Mapper       *xentity.EntityMappers `di:"~"`
+	JwtService   *service.JwtService    `di:"~"`
+	UserService  *service.UserService   `di:"~"`
+	TokenService *service.TokenService  `di:"~"`
 }
 
 func NewAuthController(dic *xdi.DiContainer) *AuthController {
 	ctrl := &AuthController{}
-	dic.InjectForce(ctrl)
+	dic.MustInject(ctrl)
 	return ctrl
 }
 
@@ -42,8 +42,8 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	user := a.UserRepo.QueryById(loginParam.Id)
-	if user == nil {
+	user, ok := a.UserService.QueryById(loginParam.Id)
+	if !ok {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
@@ -66,7 +66,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		result.Error(exception.LoginError).SetData(err).JSON(c)
 		return
 	}
-	ok := a.TokenRepo.Insert(accessToken, user.ID)
+	ok = a.TokenService.Insert(accessToken, user.ID)
 	if !ok {
 		result.Error(exception.LoginError).JSON(c)
 		return
@@ -101,7 +101,7 @@ func (a *AuthController) Register(c *gin.Context) {
 	}
 
 	user.Password = newPassword
-	status := a.UserRepo.Insert(user)
+	status := a.UserService.Insert(user)
 	if status == database.DbFailed {
 		result.Error(exception.RegisterError).JSON(c)
 		return
@@ -132,7 +132,7 @@ func (a *AuthController) RefreshToken(c *gin.Context) {
 		}
 		return
 	}
-	ok := a.TokenRepo.Insert(accessToken, uid)
+	ok := a.TokenService.Insert(accessToken, uid)
 	if !ok {
 		result.Error(exception.RefreshTokenError).JSON(c)
 		return
@@ -163,7 +163,7 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 // @ResponseModel 200   #Result
 func (a *AuthController) Logout(c *gin.Context) {
 	token := a.JwtService.GetToken(c)
-	ok := a.TokenRepo.Delete(token)
+	ok := a.TokenService.Delete(token)
 	if !ok {
 		result.Error(exception.LogoutError).JSON(c)
 		return
@@ -193,7 +193,7 @@ func (a *AuthController) ResetPassword(c *gin.Context) {
 	}
 	user.Password = encrypted
 
-	status := a.UserRepo.Update(user)
+	status := a.UserService.Update(user)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -201,7 +201,7 @@ func (a *AuthController) ResetPassword(c *gin.Context) {
 		result.Error(exception.UpdatePasswordError).JSON(c)
 		return
 	}
-	_ = a.TokenRepo.DeleteAll(user.ID)
+	_ = a.TokenService.DeleteAll(user.ID)
 
 	result.Ok().JSON(c)
 }

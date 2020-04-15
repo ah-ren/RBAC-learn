@@ -17,15 +17,15 @@ import (
 )
 
 type UserController struct {
-	Config     *config.ServerConfig   `di:"~"`
-	Mapper     *xentity.EntityMappers `di:"~"`
-	JwtService *service.JwtService    `di:"~"`
-	UserRepo   *service.UserService   `di:"~"`
+	Config      *config.ServerConfig   `di:"~"`
+	Mapper      *xentity.EntityMappers `di:"~"`
+	JwtService  *service.JwtService    `di:"~"`
+	UserService *service.UserService   `di:"~"`
 }
 
 func NewUserController(dic *xdi.DiContainer) *UserController {
 	ctrl := &UserController{}
-	dic.InjectForce(ctrl)
+	dic.MustInject(ctrl)
 	return ctrl
 }
 
@@ -38,7 +38,7 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 // @ResponseModel 200   #Result<Page<UserDto>>
 func (u *UserController) QueryAll(c *gin.Context) {
 	page, limit := param.BindPage(c, u.Config)
-	total, users := u.UserRepo.QueryAll(page, limit)
+	total, users := u.UserService.QueryAll(page, limit)
 
 	usersDto := xcondition.First(u.Mapper.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
 	result.Ok().SetPage(int32(len(usersDto)), page, total, usersDto).JSON(c)
@@ -57,8 +57,8 @@ func (u *UserController) Query(c *gin.Context) {
 		return
 	}
 
-	user := u.UserRepo.QueryById(id)
-	if user == nil {
+	user, ok := u.UserService.QueryById(id)
+	if !ok {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
@@ -85,7 +85,7 @@ func (u *UserController) Update(c *gin.Context) {
 	user := &po.User{ID: uid}
 	_ = u.Mapper.MapProp(updateUserParam, user)
 
-	status := u.UserRepo.Update(user)
+	status := u.UserService.Update(user)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -110,7 +110,7 @@ func (u *UserController) Delete(c *gin.Context) {
 		return
 	}
 
-	status := u.UserRepo.Delete(id)
+	status := u.UserService.Delete(id)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
