@@ -30,9 +30,9 @@ var (
 
 // Role
 var (
-	PolicyQueryError    = NewError(500, "get roles failed")
 	PolicyInsertError   = NewError(500, "insert policy failed")
 	PolicyDeleteError   = NewError(500, "delete policy failed")
 	PolicyNotFountError = NewError(404, "policy not found")
 	PolicyExistedError  = NewError(409, "policy has existed")
+	PolicySetRootError  = NewError(403, "set root role failed")
 )

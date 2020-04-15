@@ -52,18 +52,21 @@ func setupApiRoute(engine *gin.Engine, dic *xdi.DiContainer) {
 		userCtrl := controller.NewUserController(dic)
 		userGroup := v1.Group("/user")
 		{
-			userGroup.GET("", jwtMw, casbinMw, userCtrl.QueryAll)
-			userGroup.GET("/:uid", jwtMw, casbinMw, userCtrl.Query)
-			userGroup.PUT("/:uid", jwtMw, casbinMw, userCtrl.Update)
-			userGroup.DELETE("/:uid", jwtMw, casbinMw, userCtrl.Delete)
+			userGroup.Use(jwtMw, casbinMw)
+			userGroup.GET("", userCtrl.QueryAll)
+			userGroup.GET("/:uid", userCtrl.Query)
+			userGroup.PUT("/:uid", userCtrl.Update)
+			userGroup.DELETE("/:uid", userCtrl.Delete)
 		}
 
 		policyCtrl := controller.NewPolicyController(dic)
 		policyGroup := v1.Group("/policy")
 		{
-			policyGroup.GET("", jwtMw, casbinMw, policyCtrl.Query)
-			policyGroup.POST("", jwtMw, casbinMw, policyCtrl.Insert)
-			policyGroup.DELETE("", jwtMw, casbinMw, policyCtrl.Delete)
+			policyGroup.Use(jwtMw, casbinMw)
+			policyGroup.GET("", policyCtrl.Query)
+			policyGroup.POST("", policyCtrl.Insert)
+			policyGroup.DELETE("", policyCtrl.Delete)
+			policyGroup.PUT("/role/:uid", policyCtrl.SetRole)
 		}
 	}
 }

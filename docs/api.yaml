@@ -134,6 +134,34 @@ paths:
         '200':
           schema:
             $ref: '#/definitions/Result'
+  /v1/policy/role/{uid}:
+    put:
+      operationId: v1-policy-role-uid-put
+      summary: Change user role
+      tags:
+      - Policy
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: uid
+        in: path
+        type: integer
+        required: true
+        description: user id
+      - name: param
+        in: body
+        required: true
+        description: request parameter
+        schema:
+          $ref: '#/definitions/RoleParam'
+      security:
+      - Jwt: []
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/Result<Page<PolicyDto>>'
   /v1/policy:
     get:
       operationId: v1-policy-get
@@ -144,6 +172,19 @@ paths:
       - application/json
       produces:
       - application/json
+      parameters:
+      - name: page
+        in: query
+        type: integer
+        required: false
+        description: Query page
+        default: 1
+      - name: limit
+        in: query
+        type: integer
+        required: false
+        description: Page size
+        default: 10
       security:
       - Jwt: []
       responses:
@@ -588,6 +629,16 @@ definitions:
         type: string
       method:
         description: policy method
+        type: string
+  RoleParam:
+    title: RoleParam
+    description: change user role request parameter
+    type: object
+    required:
+    - role
+    properties:
+      role:
+        description: policy role
         type: string
   UpdateUserParam:
     title: UpdateUserParam

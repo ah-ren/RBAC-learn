@@ -5,10 +5,13 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/result"
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
 	"github.com/Aoi-hosizora/RBAC-learn/src/database"
+	"github.com/Aoi-hosizora/RBAC-learn/src/model/dto"
 	"github.com/Aoi-hosizora/RBAC-learn/src/model/param"
 	"github.com/Aoi-hosizora/RBAC-learn/src/service"
+	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xentity"
+	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,19 +28,56 @@ func NewPolicyController(dic *xdi.DiContainer) *PolicyController {
 	return ctrl
 }
 
+// @Router              /v1/policy/role/{uid} [PUT]
+// @Summary             Change user role
+// @Security            Jwt
+// @Tag                 Policy
+// @Param               uid   path integer    true "user id"
+// @Param               param body #RoleParam true "request parameter"
+// @ResponseModel 200   #Result<Page<PolicyDto>>
+func (r *PolicyController) SetRole(c *gin.Context) {
+	uid, ok := param.BindId(c, "uid")
+	roleParam := &param.RoleParam{}
+	if err := c.ShouldBind(roleParam); err != nil || !ok {
+		result.Error(exception.RequestParamError).JSON(c)
+		return
+	}
+
+	user, ok := r.UserService.QueryById(uid)
+	if !ok {
+		result.Error(exception.UserNotFoundError).JSON(c)
+		return
+	}
+	if user.Role == "root" {
+		result.Error(exception.PolicySetRootError).JSON(c)
+		return
+	}
+	user.Role = roleParam.Role
+
+	status := r.UserService.Update(user)
+	if status == database.DbNotFound {
+		result.Error(exception.UserNotFoundError).JSON(c)
+		return
+	} else if status == database.DbFailed {
+		result.Error(exception.UserUpdateError).JSON(c)
+		return
+	}
+
+	result.Ok().JSON(c)
+}
+
 // @Router              /v1/policy [GET]
 // @Summary             Query policy list
+// @Template            Page
 // @Security            Jwt
 // @Tag                 Policy
 // @ResponseModel 200   #Result<Page<PolicyDto>>
 func (r *PolicyController) Query(c *gin.Context) {
-	policies, ok := r.CasbinService.GetPolicies()
-	if !ok {
-		result.Error(exception.PolicyQueryError).JSON(c)
-		return
-	}
+	page, limit := param.BindPage(c, r.Config)
+	total, policies := r.CasbinService.GetPolicies(limit, page)
 
-	result.Ok().SetPage(int32(len(policies)), 1, int32(len(policies)), policies).JSON(c)
+	policiesDto := xcondition.First(r.Mapper.MapSlice(xslice.Sti(policies), &dto.PolicyDto{})).([]*dto.PolicyDto)
+	result.Ok().SetPage(total, page, limit, policiesDto).JSON(c)
 }
 
 // @Router              /v1/policy [POST]

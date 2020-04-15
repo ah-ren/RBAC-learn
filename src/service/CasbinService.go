@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
 	"github.com/Aoi-hosizora/RBAC-learn/src/database"
-	"github.com/Aoi-hosizora/RBAC-learn/src/model/dto"
+	"github.com/Aoi-hosizora/RBAC-learn/src/model/po"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/casbin/casbin/v2"
 	gormadapter "github.com/casbin/gorm-adapter/v2"
@@ -60,24 +60,12 @@ func (c *CasbinService) GetRoles() ([]string, bool) {
 	return enforcer.GetAllRoles(), true
 }
 
-func (c *CasbinService) GetPolicies() ([]*dto.PolicyDto, bool) {
-	enforcer, err := c.GetEnforcer()
-	if err != nil {
-		return nil, false
-	}
-	policies := enforcer.GetPolicy()
-	out := make([]*dto.PolicyDto, len(policies))
-	for idx := range policies {
-		if len(policies[idx]) < 3 {
-			continue
-		}
-		out[idx] = &dto.PolicyDto{
-			Role:   policies[idx][0],
-			Path:   policies[idx][1],
-			Method: policies[idx][2],
-		}
-	}
-	return out, true
+func (c *CasbinService) GetPolicies(limit int32, page int32) (int32, []*po.Policy) {
+	total := 0
+	policies := make([]*po.Policy, 0)
+	c.Db.Table("tbl_casbin_rule").Count(&total)
+	c.Db.Table("tbl_casbin_rule").Limit(limit).Offset((page - 1) * limit).Find(&policies)
+	return int32(total), policies
 }
 
 func (c *CasbinService) AddPolicy(sub string, obj string, act string) database.DbStatus {

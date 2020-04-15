@@ -10,3 +10,10 @@ type PolicyParam struct {
 	Path   string `json:"path"   form:"path"   binding:"required"`
 	Method string `json:"method" form:"method" binding:"required"`
 }
+
+// @Model         RoleParam
+// @Description   change user role request parameter
+// @Property      role   string true "policy role"
+type RoleParam struct {
+	Role string `json:"role" form:"role" binding:"required"`
+}

@@ -31,10 +31,9 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 
 // @Router              /v1/user [GET]
 // @Summary             Query user list
+// @Template            Page
 // @Security            Jwt
 // @Tag                 User
-// @Param               page  query integer false "Query page"(default:1)
-// @Param               limit query integer false "Page size" (default:10)
 // @ResponseModel 200   #Result<Page<UserDto>>
 func (u *UserController) QueryAll(c *gin.Context) {
 	page, limit := param.BindPage(c, u.Config)

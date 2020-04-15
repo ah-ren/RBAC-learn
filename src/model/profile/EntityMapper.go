@@ -40,5 +40,16 @@ func CreateEntityMappers() *xentity.EntityMappers {
 		return nil
 	}))
 
+	// policyPo -> policyDto
+	mappers.AddMapper(xentity.NewEntityMapper(&po.Policy{}, func() interface{} { return &dto.PolicyDto{} }, func(from interface{}, to interface{}) error {
+		policy := from.(*po.Policy)
+		policyDto := to.(*dto.PolicyDto)
+
+		policyDto.Role = policy.V0
+		policyDto.Path = policy.V1
+		policyDto.Method = policy.V1
+		return nil
+	}))
+
 	return mappers
 }
