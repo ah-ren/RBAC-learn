@@ -34,7 +34,7 @@ func NewPolicyController(dic *xdi.DiContainer) *PolicyController {
 // @Tag                 Policy
 // @Param               uid   path integer    true "user id"
 // @Param               param body #RoleParam true "request parameter"
-// @ResponseModel 200   #Result<Page<PolicyDto>>
+// @ResponseModel 200   #Result
 func (r *PolicyController) SetRole(c *gin.Context) {
 	uid, ok := param.BindId(c, "uid")
 	roleParam := &param.RoleParam{}

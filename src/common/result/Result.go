@@ -2,16 +2,15 @@ package result
 
 import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/exception"
-	"github.com/Aoi-hosizora/ahlib/xlinkedhashmap"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 )
 
 type Result struct {
-	Code    int32                         `json:"code"`
-	Message string                        `json:"message"`
-	Data    *xlinkedhashmap.LinkedHashMap `json:"data,omitempty"`
+	Code    int32       `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 func Status(code int32) *Result {
@@ -46,26 +45,12 @@ func (r *Result) SetMessage(message string) *Result {
 }
 
 func (r *Result) SetData(data interface{}) *Result {
-	r.Data = xlinkedhashmap.ObjectToLinkedHashMap(data)
-	return r
-}
-
-func (r *Result) PutData(field string, data interface{}) *Result {
-	if r.Data == nil {
-		r.Data = xlinkedhashmap.NewLinkedHashMap()
-	}
-	r.Data.Set(field, data)
+	r.Data = data
 	return r
 }
 
 func (r *Result) SetPage(total int32, page int32, limit int32, data interface{}) *Result {
-	if r.Data == nil {
-		r.Data = xlinkedhashmap.NewLinkedHashMap()
-	}
-	r.Data.Set("total", total)
-	r.Data.Set("page", page)
-	r.Data.Set("limit", limit)
-	r.Data.Set("data", data)
+	r.Data = NewPage(total, page, limit, data)
 	return r
 }
 

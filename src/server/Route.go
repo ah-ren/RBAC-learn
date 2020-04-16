@@ -12,10 +12,14 @@ import (
 	"net/http"
 )
 
+// @Router           /ping [GET]
+// @Summary          Ping
+// @Tag              Ping
+// @ResponseEx 200   {"ping": "pong"}
 func setupCommonRoute(engine *gin.Engine) {
 	engine.HandleMethodNotAllowed = true
 	engine.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
+		c.JSON(http.StatusOK, &gin.H{"ping": "pong"})
 	})
 	engine.NoMethod(func(c *gin.Context) {
 		result.Status(http.StatusMethodNotAllowed).JSON(c)

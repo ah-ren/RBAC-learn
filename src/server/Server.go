@@ -26,9 +26,9 @@ func NewServer(config *config.ServerConfig) *Server {
 	logger := setupLogger(config)
 	dic := provideServices(config, logger)
 
+	engine.Use(middleware.LoggerMiddleware(logger))
 	engine.Use(gin.Recovery())
 	engine.Use(middleware.CorsMiddleware())
-	engine.Use(middleware.LoggerMiddleware(logger))
 
 	if gin.Mode() == "debug" {
 		ginpprof.Wrap(engine)

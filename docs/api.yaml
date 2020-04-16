@@ -161,7 +161,7 @@ paths:
       responses:
         '200':
           schema:
-            $ref: '#/definitions/Result<Page<PolicyDto>>'
+            $ref: '#/definitions/Result'
   /v1/policy:
     get:
       operationId: v1-policy-get
@@ -334,6 +334,24 @@ paths:
         '200':
           schema:
             $ref: '#/definitions/Result'
+  /ping:
+    get:
+      operationId: ping-get
+      summary: Ping
+      tags:
+      - Ping
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      security: []
+      responses:
+        '200':
+          examples:
+            application/json: |-
+              {
+                "ping": "pong"
+              }
 definitions:
   _LoginDto:
     title: _LoginDto
