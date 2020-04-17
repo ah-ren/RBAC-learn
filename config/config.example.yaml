@@ -25,11 +25,15 @@ redis:
   write-timeout: 1000
 
 jwt:
-  secret: 9C27D0C7C04BDA8A1F1B099CF4F9B1956AF5164F
+  secret: xxx
   issuer: rbac.learn.auth
   expire: 3600 # second
   refresh-expire: 7200 # second
   redis-fmt: rbac-learn-token-%s-%s # uid-token
+  fake: # only used when debug mode
+    xxx_root: 1
+    xxx_admin: 3
+    xxx_normal: 4
 
 casbin:
-  config-path: ./src/config/rbac-model.conf
+  config-path: ./config/rbac-model.conf

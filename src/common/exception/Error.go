@@ -1,9 +1,12 @@
 package exception
 
 type Error struct {
-	error
 	Code    int32
 	Message string
+}
+
+func (e *Error) Error() string {
+	return e.Message
 }
 
 func NewError(code int32, message string) *Error {

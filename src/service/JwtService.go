@@ -8,6 +8,7 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/util"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 type JwtService struct {
@@ -35,6 +36,18 @@ func (j *JwtService) GetToken(c *gin.Context) string {
 func (j *JwtService) JwtCheck(token string) (*po.User, *exception.Error) {
 	if token == "" {
 		return nil, exception.UnAuthorizedError
+	}
+
+	// fake
+	if j.Config.MetaConfig.RunMode == "debug" {
+		if uid, ok := j.Config.JwtConfig.FakeToken[token]; ok {
+			log.Println(uid)
+			user, ok := j.UserRepo.QueryById(uid)
+			if !ok {
+				return nil, exception.UnAuthorizedError
+			}
+			return user, nil
+		}
 	}
 
 	// parse

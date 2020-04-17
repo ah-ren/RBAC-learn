@@ -5,10 +5,11 @@
 .history/
 *.rdb
 
-### Build ###
+### Project ###
 build/
 release/
 log/
+config/config.yaml
 
 ### My ###
 docs/script/*.py

@@ -5,7 +5,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// GormLogger struct
 type GormLogger struct {
 	Logger *logrus.Logger
 }
@@ -14,7 +13,6 @@ func NewGormLogger(logger *logrus.Logger) *GormLogger {
 	return &GormLogger{Logger: logger}
 }
 
-// Print - Log Formatter
 func (g *GormLogger) Print(v ...interface{}) {
 	// v[0]: type; v[1]: src; v[2]: duration; v[3]: sql; v[4]: values; v[5]: rows
 	switch v[0] {

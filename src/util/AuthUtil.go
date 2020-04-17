@@ -92,12 +92,12 @@ func (a *authUtil) RefreshToken(refreshToken string, accessToken string, config 
 	if refreshClaims.UserId != accessClaims.UserId || refreshClaims.Issuer != accessClaims.Issuer {
 		return 0, "", "", exception.InvalidRefreshTokenError
 	}
-	newRefreshToken, err := a.GenerateToken(refreshClaims.UserId, true, config)
-	newAccessToken, err1 := a.GenerateToken(refreshClaims.UserId, false, config)
-	if err == nil {
-		err = err1
+	newRefreshToken, err1 := a.GenerateToken(refreshClaims.UserId, true, config)
+	newAccessToken, err2 := a.GenerateToken(refreshClaims.UserId, false, config)
+	if err1 == nil {
+		err1 = err2
 	}
-	return refreshClaims.UserId, newRefreshToken, newAccessToken, err
+	return refreshClaims.UserId, newRefreshToken, newAccessToken, err1
 }
 
 func (a *authUtil) IsTokenExpired(err error) bool {

@@ -54,6 +54,6 @@ func (s *Server) Serve() {
 
 	err := server.ListenAndServe()
 	if err != nil {
-		log.Fatalf("Failed to listen port and server: %v\n", err)
+		log.Fatalf("Failed to listen port and serve: %v\n", err)
 	}
 }
