@@ -43,7 +43,7 @@ func (t *TokenService) Delete(token string) bool { // logout
 	return t.deleteAll(pattern)
 }
 
-func (t *TokenService) DeleteAll(uid uint32) bool { // changePass
+func (t *TokenService) DeleteAll(uid uint32) bool { // reset password
 	pattern := t.concat(strconv.Itoa(int(uid)), "*")
 	return t.deleteAll(pattern)
 }

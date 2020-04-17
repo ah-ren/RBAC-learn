@@ -11,7 +11,7 @@ import (
 	"log"
 )
 
-func SetupMySqlConn(config *config.MySqlConfig, logger *logrus.Logger) *gorm.DB {
+func SetupMySQLConn(config *config.MySQLConfig, logger *logrus.Logger) *gorm.DB {
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		config.User, config.Password,
 		config.Host, config.Port,
@@ -32,7 +32,6 @@ func SetupMySqlConn(config *config.MySqlConfig, logger *logrus.Logger) *gorm.DB 
 	}
 
 	autoMigrateModel(db)
-
 	return db
 }
 

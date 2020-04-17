@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
 	"github.com/gomodule/redigo/redis"
+	"github.com/sirupsen/logrus"
 	"log"
 	"time"
 )
 
-func SetupRedisConn(config *config.RedisConfig) redis.Conn {
+func SetupRedisConn(config *config.RedisConfig, logger *logrus.Logger) redis.Conn {
 	conn, err := redis.Dial(
 		config.ConnType,
 		fmt.Sprintf("%s:%d", config.Host, config.Port),
@@ -22,5 +23,5 @@ func SetupRedisConn(config *config.RedisConfig) redis.Conn {
 		log.Fatalln("Failed to connect redis:", err)
 	}
 
-	return conn
+	return NewRedisLogger(conn, logger)
 }

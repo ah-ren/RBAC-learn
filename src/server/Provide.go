@@ -17,8 +17,8 @@ func provideServices(config *config.ServerConfig, logger *logrus.Logger) *xdi.Di
 	dic.Provide(logger)
 
 	dic.Provide(profile.CreateEntityMappers())
-	dic.Provide(database.SetupMySqlConn(config.MySqlConfig, logger))
-	dic.ProvideImpl((*redis.Conn)(nil), database.SetupRedisConn(config.RedisConfig))
+	dic.Provide(database.SetupMySQLConn(config.MySQLConfig, logger))
+	dic.ProvideImpl((*redis.Conn)(nil), database.SetupRedisConn(config.RedisConfig, logger))
 
 	dic.Provide(service.NewUserService(dic))
 	dic.Provide(service.NewTokenService(dic))

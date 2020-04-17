@@ -16,7 +16,7 @@ type MetaConfig struct {
 	MaxPageSize int32  `json:"max-page-size" yaml:"max-page-size"`
 }
 
-type MySqlConfig struct {
+type MySQLConfig struct {
 	Host     string `json:"host"     yaml:"host"`
 	Port     int32  `json:"port"     yaml:"port"`
 	Name     string `json:"name"     yaml:"name"`
@@ -53,7 +53,7 @@ type CasbinConfig struct {
 
 type ServerConfig struct {
 	MetaConfig   *MetaConfig   `json:"meta"   yaml:"meta"`
-	MySqlConfig  *MySqlConfig  `json:"mysql"  yaml:"mysql"`
+	MySQLConfig  *MySQLConfig  `json:"mysql"  yaml:"mysql"`
 	RedisConfig  *RedisConfig  `json:"redis"  yaml:"redis"`
 	JwtConfig    *JwtConfig    `json:"jwt"    yaml:"jwt"`
 	CasbinConfig *CasbinConfig `json:"casbin" yaml:"casbin"`
