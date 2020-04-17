@@ -21,6 +21,7 @@ func setupCommonRoute(engine *gin.Engine) {
 	engine.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, &gin.H{"ping": "pong"})
 	})
+
 	engine.NoMethod(func(c *gin.Context) {
 		result.Status(http.StatusMethodNotAllowed).JSON(c)
 	})

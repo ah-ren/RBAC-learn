@@ -2,7 +2,8 @@ package exception
 
 // Request
 var (
-	RequestParamError = NewError(400, "request param error")
+	RequestParamError   = NewError(400, "request param error")
+	ServerRecoveryError = NewError(500, "server unknown error")
 )
 
 // Authorization

@@ -32,7 +32,7 @@ func (j *JwtService) GetToken(c *gin.Context) string {
 	}
 }
 
-func (j *JwtService) JwtCheck(token string) (*po.User, *exception.ServerError) {
+func (j *JwtService) JwtCheck(token string) (*po.User, *exception.Error) {
 	if token == "" {
 		return nil, exception.UnAuthorizedError
 	}

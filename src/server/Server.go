@@ -27,7 +27,7 @@ func NewServer(config *config.ServerConfig) *Server {
 	dic := provideServices(config, logger)
 
 	engine.Use(middleware.LoggerMiddleware(logger))
-	engine.Use(gin.Recovery())
+	engine.Use(middleware.RecoveryMiddleware(logger))
 	engine.Use(middleware.CorsMiddleware())
 
 	if gin.Mode() == "debug" {
