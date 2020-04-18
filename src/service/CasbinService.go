@@ -6,7 +6,7 @@ import (
 	"github.com/Aoi-hosizora/RBAC-learn/src/model/po"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/casbin/casbin/v2"
-	gormadapter "github.com/casbin/gorm-adapter/v2"
+	"github.com/casbin/gorm-adapter/v2"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 )

@@ -12,6 +12,7 @@ type Result struct {
 	Code    int32                         `json:"code"`
 	Message string                        `json:"message"`
 	Data    *xlinkedhashmap.LinkedHashMap `json:"data,omitempty"`
+	Error   interface{}                   `json:"error,omitempty"`
 }
 
 func Status(code int32) *Result {
@@ -42,6 +43,18 @@ func (r *Result) SetCode(code int32) *Result {
 
 func (r *Result) SetMessage(message string) *Result {
 	r.Message = strings.ToLower(message)
+	return r
+}
+
+func (r *Result) SetError(err error, c *gin.Context) *Result {
+	if gin.Mode() == gin.DebugMode {
+		// 0: exception.stack
+		// 1: exception.NewErrorDto
+		// 2: result.(*Result).SetError
+		// 3: "server.setupCommonRoute.func2
+		// 4: gin.(*Context).Next
+		r.Error = exception.NewErrorDto(err, 3, c, false)
+	}
 	return r
 }
 

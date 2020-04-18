@@ -1,60 +1,31 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/exception"
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/result"
 	"github.com/Aoi-hosizora/ahlib/xcolor"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"net/http/httputil"
-	"path/filepath"
-	"runtime"
-	"strings"
-	"time"
 )
 
 func RecoveryMiddleware(logger *logrus.Logger) gin.HandlerFunc {
+	// 0: exception.stack
+	// 1: exception.NewErrorDto
+	// 2: middleware.RecoveryMiddleware.func1.1
+	// 3: runtime.gopanic
+	// 4: server.setupCommonRoute.func3
+	// 5: gin.(*Context).Next
 	return func(c *gin.Context) {
 		// skip, _ := strconv.Atoi(c.Query("s"))
-		skip := 2 // stack
+		skip := 4 // stack
+		gin.Recovery()
 		defer func() {
 			if err := recover(); err != nil {
 				r := result.Error(exception.ServerRecoveryError)
 
 				if gin.Mode() == gin.DebugMode {
-					now := time.Now().Format(time.RFC3339)
-
-					// runtime
-					function := "?"
-					pc, filename, line, ok := runtime.Caller(skip)
-					if ok {
-						function = runtime.FuncForPC(pc).Name()
-						_, function = filepath.Split(function)
-					}
-					detail := fmt.Sprintf("%v", err)
-
-					// request
-					requestBytes, _ := httputil.DumpRequest(c.Request, false)
-					requestParams := strings.Split(string(requestBytes), "\r\n")
-					request := make([]string, 0)
-					for _, param := range requestParams {
-						if strings.HasPrefix(param, "Authorization:") { // Authorization header
-							request = append(request, "Authorization: *")
-						} else if param != "" { // other param
-							request = append(request, param)
-						}
-					}
-
-					// response
-					r.SetData(&exception.ErrorDto{
-						Time:    now,
-						File:    filename,
-						Line:    line,
-						Func:    function,
-						Detail:  detail,
-						Request: request,
-					})
+					errDto := exception.NewErrorDto(err, skip, c, true)
+					r.Error = errDto
 				}
 				r.JSON(c)
 
