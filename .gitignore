@@ -10,7 +10,3 @@ build/
 release/
 log/
 config/config.yaml
-
-### My ###
-docs/script/*.py
-gendoc.sh
