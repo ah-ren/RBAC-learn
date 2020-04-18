@@ -1,8 +1,8 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.37.4/go.mod h1:NHPJ89PdicEuT9hdPXMROBD91xc5uRDxsMtSB16k7hw=
-github.com/Aoi-hosizora/ahlib v0.0.0-20200415104900-cd2b9233b76b h1:LOWJhg6NMi7FXoJY9RchkuSYMqoq/JFAM2ymjvaLPAU=
-github.com/Aoi-hosizora/ahlib v0.0.0-20200415104900-cd2b9233b76b/go.mod h1:oa2f9jtUDzZ5zklB+pZKOUV7SBpdINmGdjlsKMa77pY=
+github.com/Aoi-hosizora/ahlib v0.0.0-20200418083058-e5eff78b17b0 h1:1UJgOrNRJ0D1Xds8fDNF6dh6f8J0b878AO+9WRmFuxc=
+github.com/Aoi-hosizora/ahlib v0.0.0-20200418083058-e5eff78b17b0/go.mod h1:oa2f9jtUDzZ5zklB+pZKOUV7SBpdINmGdjlsKMa77pY=
 github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200227043052-1d9e28f9af56 h1:/Ey01PApvbpn6zLZjFoGGvHKjYx4k6CX43V5TldDV6E=
 github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200227043052-1d9e28f9af56/go.mod h1:GMkxZxfrUEFfRbYFjT6Rp1yB8sByE6XBj/9IoadF8es=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=

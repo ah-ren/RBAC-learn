@@ -49,7 +49,7 @@ func (a *AuthController) Login(c *gin.Context) {
 	}
 
 	if ok, err := util.AuthUtil.CheckPassword(loginParam.Password, user.Password); err != nil {
-		result.Error(exception.LoginError).SetData(err).JSON(c)
+		result.Error(exception.LoginError).JSON(c)
 		return
 	} else if !ok {
 		result.Error(exception.WrongPasswordError).JSON(c)
@@ -58,12 +58,12 @@ func (a *AuthController) Login(c *gin.Context) {
 
 	accessToken, err := util.AuthUtil.GenerateToken(user.ID, false, a.Config.JwtConfig)
 	if err != nil {
-		result.Error(exception.LoginError).SetData(err).JSON(c)
+		result.Error(exception.LoginError).JSON(c)
 		return
 	}
 	refreshToken, err := util.AuthUtil.GenerateToken(user.ID, true, a.Config.JwtConfig)
 	if err != nil {
-		result.Error(exception.LoginError).SetData(err).JSON(c)
+		result.Error(exception.LoginError).JSON(c)
 		return
 	}
 	ok = a.TokenService.Insert(accessToken, user.ID)

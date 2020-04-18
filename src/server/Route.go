@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"github.com/Aoi-hosizora/RBAC-learn/src/common/exception"
 	"github.com/Aoi-hosizora/RBAC-learn/src/common/result"
 	"github.com/Aoi-hosizora/RBAC-learn/src/config"
 	"github.com/Aoi-hosizora/RBAC-learn/src/controller"
@@ -22,13 +21,13 @@ func setupCommonRoute(engine *gin.Engine) {
 	engine.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, &gin.H{"ping": "pong"})
 	})
-	engine.GET("/error", func(c *gin.Context) {
-		err := fmt.Errorf("test error in /error")
-		result.Error(exception.ServerRecoveryError).SetError(err, c).JSON(c)
-	})
-	engine.GET("/panic", func(c *gin.Context) {
-		panic("test panic in /panic")
-	})
+	// engine.GET("/error", func(c *gin.Context) {
+	// 	err := fmt.Errorf("test error in /error")
+	// 	result.Error(exception.ServerRecoveryError).SetError(err, c).JSON(c)
+	// })
+	// engine.GET("/panic", func(c *gin.Context) {
+	// 	panic("test panic in /panic")
+	// })
 
 	engine.NoMethod(func(c *gin.Context) {
 		result.Status(http.StatusMethodNotAllowed).JSON(c)
