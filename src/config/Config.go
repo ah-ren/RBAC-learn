@@ -33,9 +33,9 @@ type RedisConfig struct {
 	Db       int32  `json:"db"        yaml:"db"`
 	Password string `json:"password"  yaml:"password"`
 
-	ConnectTimeout int32 `yaml:"connect-timeout"`
-	ReadTimeout    int32 `yaml:"read-timeout"`
-	WriteTimeout   int32 `yaml:"write-timeout"`
+	ConnectTimeout int32 `json:"connect_timeout" yaml:"connect-timeout"`
+	ReadTimeout    int32 `json:"read_timeout"    yaml:"read-timeout"`
+	WriteTimeout   int32 `json:"write_timeout"   yaml:"write-timeout"`
 }
 
 type JwtConfig struct {

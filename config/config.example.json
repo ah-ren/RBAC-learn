@@ -20,7 +20,7 @@
     "host": "127.0.0.1",
     "port": 6379,
     "db": 1,
-    "password": "123,",
+    "password": "123",
     "connect-timeout": 1000,
     "read-timeout": 1000,
     "write-timeout": 1000
@@ -28,7 +28,7 @@
   "jwt": {
     "secret": "xxx",
     "issuer": "rbac.learn.auth",
-    "expire": "3600",
+    "expire": 3600,
     "refresh-expire": 7200,
     "redis-fmt": "rbac-learn-token-%s-%s",
     "fake": {
