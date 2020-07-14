@@ -1,6 +1,7 @@
 # RBAC-learn
 
 + A restful api backend based on RBAC written by [gin](https://github.com/gin-gonic/gin), [gorm](https://github.com/jinzhu/gorm), [casbin](https://github.com/casbin/casbin) and [xdi](https://github.com/Aoi-hosizora/ahlib)
++ **!!! Deprecate repo, see scaffold template**
 
 ### Functions
 
